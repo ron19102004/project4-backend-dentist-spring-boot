@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: Hospital-BE
+  datasource:
+    url: jdbc:mysql://localhost:3306/prj4ron?createDatabaseIfNotExist=true
+    username: root
+    password:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.MySQL8Dialect
+
+jwt:
+  key-path:
+    access-token-private-path: keys/access-token-private.key
+    access-token-public-path: keys/access-token-public.key
+    refresh-token-private-path: keys/refresh-token-private.key
+    refresh-token-public-path: keys/refresh-token-public.key
