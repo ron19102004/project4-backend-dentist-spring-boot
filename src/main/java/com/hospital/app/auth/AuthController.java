@@ -1,6 +1,6 @@
 package com.hospital.app.auth;
 
-import com.hospital.app.conf.JwtUtils;
+import com.hospital.app.jwt.JwtUtils;
 import com.hospital.app.dto.LoginDTO;
 import com.hospital.app.dto.RegisterDTO;
 import com.hospital.app.dto.TokenDTO;
@@ -9,11 +9,9 @@ import com.hospital.app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.web.bind.annotation.PostMapping;

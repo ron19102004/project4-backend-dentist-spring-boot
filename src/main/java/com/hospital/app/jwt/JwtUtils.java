@@ -1,4 +1,4 @@
-package com.hospital.app.conf;
+package com.hospital.app.jwt;
 
 import com.hospital.app.dto.TokenDTO;
 import com.hospital.app.entities.User;

@@ -1,4 +1,4 @@
-package com.hospital.app.conf;
+package com.hospital.app.jwt;
 
 import com.hospital.app.entities.User;
 import org.springframework.core.convert.converter.Converter;

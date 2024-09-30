@@ -1,4 +1,4 @@
-package com.hospital.app.conf;
+package com.hospital.app.jwt;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
