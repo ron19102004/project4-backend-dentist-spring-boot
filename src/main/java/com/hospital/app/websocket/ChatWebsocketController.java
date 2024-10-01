@@ -30,15 +30,27 @@ public class ChatWebsocketController {
                 .build();
         UserWebsocketDetailsMapper userMapper = userSocketSessionManager.addUser(user);
         System.out.println(userSocketSessionManager.getConnectedUsers());
-        return new ResponseLayout<>(true,userMapper,"Connected");
+        return ResponseLayout.builder()
+                .data(null)
+                .message("")
+                .success(true)
+                .build();
     }
     @MessageMapping("/disconnect")
     @SendTo("/topic/disconnect")
     public ResponseLayout<Object> removeUser(Long id) {
         System.out.println("disconnect:"+id);
         if (userSocketSessionManager.removeUser(id)) {
-            return new ResponseLayout<Object>(true, null, "Disconnected");
+            return ResponseLayout.builder()
+                    .data(null)
+                    .message("")
+                    .success(true)
+                    .build();
         }
-        return new ResponseLayout<Object>(false, null, "User not found");
+        return ResponseLayout.builder()
+                .data(null)
+                .message("")
+                .success(false)
+                .build();
     }
 }

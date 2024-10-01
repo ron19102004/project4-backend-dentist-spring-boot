@@ -64,8 +64,11 @@ public class SecurityConf {
 
         http.authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/ws/**").permitAll()
+                                .requestMatchers(
+                                        "/api/auth/**",
+                                        "/ws/**",
+                                        "/swagger-ui/**",
+                                        "/v3/api-docs/**").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtToUserConverter)))
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
