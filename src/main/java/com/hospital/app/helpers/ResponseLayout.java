@@ -4,6 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * ResponseLayout define for response entity
+ * @param <T>
+ */
 @Getter
 @Setter
 @Builder

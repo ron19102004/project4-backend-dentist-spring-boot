@@ -22,6 +22,11 @@ public class MailerConf {
     private boolean auth;
     @Value("${mailer.properties.mail.smtp.starttls.enable}")
     private boolean starttls_enable;
+
+    /**
+     * Configuration mail sender
+     * @return JavaMailSender
+     */
     @Bean
     public JavaMailSender mailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

@@ -33,34 +33,66 @@ public class KeyUtils {
 
     private KeyPair _accessTokenKeyPair;
     private KeyPair _refreshTokenKeyPair;
-
-    public RSAPublicKey getAccessTokenPublicKey(){
+    /**
+     * Get RSAPublicKey for AccessToken form AccessTokenKeyPair
+     *
+     * @return RSAPublicKey
+     */
+    public RSAPublicKey getAccessTokenPublicKey() {
         return (RSAPublicKey) getAccessTokenKeyPair().getPublic();
     }
-    public RSAPrivateKey getAccessTokenPrivateKey(){
+    /**
+     * Get RSAPrivateKey for AccessToken form AccessTokenKeyPair
+     *
+     * @return RSAPrivateKey
+     */
+    public RSAPrivateKey getAccessTokenPrivateKey() {
         return (RSAPrivateKey) getAccessTokenKeyPair().getPrivate();
     }
-
-    public RSAPublicKey getRefreshTokenPublicKey(){
+    /**
+     * Get RSAPublicKey for RefreshToken form RefreshTokenKeyPair
+     *
+     * @return RSAPublicKey
+     */
+    public RSAPublicKey getRefreshTokenPublicKey() {
         return (RSAPublicKey) getRefreshTokenKeyPair().getPublic();
     }
-    public RSAPrivateKey getRefreshTokenPrivateKey(){
+    /**
+     * Get RSAPrivateKey for RefreshToken form RefreshTokenKeyPair
+     *
+     * @return RSAPrivateKey
+     */
+    public RSAPrivateKey getRefreshTokenPrivateKey() {
         return (RSAPrivateKey) getRefreshTokenKeyPair().getPrivate();
     }
 
-    private KeyPair getAccessTokenKeyPair(){
-        if (Objects.isNull(_accessTokenKeyPair)){
-            _accessTokenKeyPair = getKeyPair(accessTokenPublicKeyPath,accessTokenPrivateKeyPath);
+    /**
+     * Get KeyPair for AccessToken
+     * @return KeyPair
+     */
+    private KeyPair getAccessTokenKeyPair() {
+        if (Objects.isNull(_accessTokenKeyPair)) {
+            _accessTokenKeyPair = getKeyPair(accessTokenPublicKeyPath, accessTokenPrivateKeyPath);
         }
         return _accessTokenKeyPair;
     }
-    private KeyPair getRefreshTokenKeyPair(){
-        if (Objects.isNull(_refreshTokenKeyPair)){
-            _refreshTokenKeyPair = getKeyPair(refreshTokenPublicKetPath,refreshTokenPrivateKeyPath);
+    /**
+     * Get KeyPair for RefreshToken
+     * @return KeyPair
+     */
+    private KeyPair getRefreshTokenKeyPair() {
+        if (Objects.isNull(_refreshTokenKeyPair)) {
+            _refreshTokenKeyPair = getKeyPair(refreshTokenPublicKetPath, refreshTokenPrivateKeyPath);
         }
         return _refreshTokenKeyPair;
     }
 
+    /**
+     * Get KeyPair from publicKeyPath and privateKeyPath
+     * @param publicKeyPath
+     * @param privateKeyPath
+     * @return KeyPair
+     */
     private KeyPair getKeyPair(String publicKeyPath, String privateKeyPath) {
         /*
          Get file include public key and private key
@@ -69,8 +101,8 @@ public class KeyUtils {
         File privateKeyFile = new File(privateKeyPath);
 
         //Check exists files
-        if (publicKeyFile.exists() && privateKeyFile.exists()){
-            try{
+        if (publicKeyFile.exists() && privateKeyFile.exists()) {
+            try {
                 /*
                 New a key factory to generate public/private key from file
                 with:
@@ -86,7 +118,7 @@ public class KeyUtils {
                 byte[] privateKeyBytes = Files.readAllBytes(privateKeyFile.toPath());
                 EncodedKeySpec privateEncodedKeySpec = new PKCS8EncodedKeySpec(privateKeyBytes);
                 PrivateKey privateKey = keyFactory.generatePrivate(privateEncodedKeySpec);
-                return new KeyPair(publicKey,privateKey);
+                return new KeyPair(publicKey, privateKey);
             } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
                 throw new RuntimeException(e);
             }
@@ -94,20 +126,20 @@ public class KeyUtils {
             System.out.println("Don't read public file & private file");
         }
         File directory = new File("keys");
-        if (!directory.exists()){
+        if (!directory.exists()) {
             directory.mkdirs();
         }
 
-        try{
+        try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
-            try(FileOutputStream fos = new FileOutputStream(publicKeyPath)){
+            try (FileOutputStream fos = new FileOutputStream(publicKeyPath)) {
                 X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyPair.getPublic().getEncoded());
                 fos.write(keySpec.getEncoded());
             }
-            try(FileOutputStream fos = new FileOutputStream(privateKeyPath)){
+            try (FileOutputStream fos = new FileOutputStream(privateKeyPath)) {
                 PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyPair.getPrivate().getEncoded());
                 fos.write(keySpec.getEncoded());
             }

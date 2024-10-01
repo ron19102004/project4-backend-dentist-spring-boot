@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Default UserController -> UserControllerVer1
+ */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -21,4 +24,13 @@ public class UserController {
     public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal User user, @PathVariable("id") Long id){
         return ResponseEntity.ok(userService.findById(id));
     }
+}
+
+/**
+ * UserControllerVer2 upgrade from UserController as UserControllerVer1
+ */
+//@RestController
+//@RequestMapping("/api/v2/users")
+class UserControllerVer2 extends UserController{
+
 }

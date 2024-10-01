@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 
+/**
+ * interface Converter<A,B> be used to change class from A to B
+ */
 @Component
 public class JwtToUserConverter implements
         Converter<Jwt, UsernamePasswordAuthenticationToken> {

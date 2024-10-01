@@ -11,6 +11,10 @@ import java.lang.annotation.Annotation;
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebsocketConf implements WebSocketMessageBrokerConfigurer {
+    /**
+     * Custom endpoint for websocket -> like as http://localhost:8080/ws
+     * @param registry
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
@@ -18,6 +22,10 @@ public class WebsocketConf implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
     }
 
+    /**
+     * Custom endpoint for action
+     * @param registry
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic","/queue");

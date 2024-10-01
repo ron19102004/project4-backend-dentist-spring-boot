@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+/**
+ * Mapper set User to UserWebsocketDetailsMapper
+ */
 @Builder
 @ToString
 @Getter

@@ -44,6 +44,11 @@ public class SecurityConf {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    /**
+     * Configuration cors source
+     * @return CorsConfigurationSource
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -56,6 +61,13 @@ public class SecurityConf {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    /**
+     * Configuration http security
+     * @param http
+     * @return SecurityFilterChain
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filter(HttpSecurity http) throws Exception {
         http.
@@ -78,11 +90,20 @@ public class SecurityConf {
         ;
         return http.build();
     }
+
+    /**
+     * Set up JwtDecoder with key from KeyUtils and AccessTokenPublicKey
+     * @return JwtDecoder
+     */
     @Bean
     @Primary
     public JwtDecoder jwtAccessTokenDecoder(){
         return NimbusJwtDecoder.withPublicKey(keyUtils.getAccessTokenPublicKey()).build();
     }
+    /**
+     * Set up JwtEncoder with key from KeyUtils and AccessTokenPublicKey and AccessTokenPrivateKey
+     * @return JwtEncoder
+     */
     @Bean
     @Primary
     public JwtEncoder jwtAccessTokenEncoder(){
@@ -91,11 +112,19 @@ public class SecurityConf {
                 .build();
         return new NimbusJwtEncoder(new ImmutableJWKSet<>(new JWKSet(jwk)));
     }
+    /**
+     * Set up JwtEncoder for RefreshToken with key from KeyUtils and RefreshTokenPublicKey
+     * @return JwtEncoder
+     */
     @Bean
     @Qualifier("jwtRefreshTokenDecoder")
     public JwtDecoder jwtRefreshTokenDecoder(){
         return NimbusJwtDecoder.withPublicKey(keyUtils.getRefreshTokenPublicKey()).build();
     }
+    /**
+     * Set up JwtEncoder for RefreshToken with key from KeyUtils and RefreshTokenPublicKey and RefreshTokenPrivateKey
+     * @return JwtEncoder
+     */
     @Bean
     @Qualifier("jwtRefreshTokenEncoder")
     public JwtEncoder jwtRefreshTokenEncoder(){
@@ -104,6 +133,11 @@ public class SecurityConf {
                 .build();
         return new NimbusJwtEncoder(new ImmutableJWKSet<>(new JWKSet(jwk)));
     }
+
+    /**
+     * Configuration JwtAuthenticationProvider for RefreshToken
+     * @return JwtAuthenticationProvider
+     */
     @Bean
     @Qualifier("jwtRefreshTokenAuthProvider")
     JwtAuthenticationProvider jwtRefreshTokenAuthProvider(){
@@ -111,6 +145,11 @@ public class SecurityConf {
         jwtAuthenticationProvider.setJwtAuthenticationConverter(jwtToUserConverter);
         return jwtAuthenticationProvider;
     }
+
+    /**
+     * Configuration DaoAuthenticationProvider
+     * @return DaoAuthenticationProvider
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
