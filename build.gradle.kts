@@ -30,6 +30,13 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-websocket")
 
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
+	implementation("org.springframework.boot:spring-boot-starter-mail")
+	implementation("org.thymeleaf:thymeleaf")
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+	implementation("org.thymeleaf:thymeleaf-spring6")
+
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.security:spring-security-oauth2-resource-server:6.3.3")
 	implementation("org.springframework.security:spring-security-oauth2-client")

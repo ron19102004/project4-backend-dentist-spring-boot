@@ -1,6 +1,16 @@
 server:
   port: 8080
-
+mailer:
+  host: smtp.gmail.com
+  port: 587
+  username: ron19102004@gmail.com
+  password: yolinxdflfxnkcuc
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
 spring:
   application:
     name: Hospital-BE
