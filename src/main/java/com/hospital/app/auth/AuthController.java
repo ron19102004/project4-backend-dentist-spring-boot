@@ -1,5 +1,6 @@
 package com.hospital.app.auth;
 
+import com.hospital.app.helpers.ResponseLayout;
 import com.hospital.app.jwt.JwtUtils;
 import com.hospital.app.dto.LoginDTO;
 import com.hospital.app.dto.RegisterDTO;
@@ -25,7 +26,7 @@ import java.util.Collections;
  * Default AuthController -> AuthControllerVer1
  */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth/v1")
 public class AuthController {
     @Autowired
     private UserService userService;
@@ -36,24 +37,24 @@ public class AuthController {
     @Autowired
     @Qualifier("jwtRefreshTokenAuthProvider")
     private JwtAuthenticationProvider jwtRefreshTokenAuthProvider;
+    @Autowired
+    private AuthService authService;
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO){
-        User user = User.builder()
-                .username(registerDTO.username())
-                .password(registerDTO.password())
-                .build();
-        userService.createUser(user);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user,registerDTO.password(), Collections.emptyList());
-        return  ResponseEntity.ok(jwtUtils.createToken(authentication));
+    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
+        ResponseLayout<?> data = authService.register(registerDTO);
+        return ResponseEntity.ok("");
     }
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         Authentication authentication = authenticationProvider.authenticate(UsernamePasswordAuthenticationToken
-                .unauthenticated(loginDTO.username(),loginDTO.password()));
-        return  ResponseEntity.ok(jwtUtils.createToken(authentication));
+                .unauthenticated(loginDTO.username(), loginDTO.password()));
+        return ResponseEntity.ok(jwtUtils.createToken(authentication));
     }
+
     @PostMapping("/token")
-    public ResponseEntity<?>  token(@RequestBody TokenDTO tokenDTO){
+    public ResponseEntity<?> token(@RequestBody TokenDTO tokenDTO) {
         Authentication authentication = jwtRefreshTokenAuthProvider
                 .authenticate(new BearerTokenAuthenticationToken(tokenDTO.refreshToken()));
         return ResponseEntity.ok(jwtUtils.createToken(authentication));

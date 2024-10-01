@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Default UserController -> UserControllerVer1
  */
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/users/v1")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -30,7 +30,7 @@ public class UserController {
  * UserControllerVer2 upgrade from UserController as UserControllerVer1
  */
 //@RestController
-//@RequestMapping("/api/v2/users")
+//@RequestMapping("/api/users/v2")
 class UserControllerVer2 extends UserController{
 
 }
