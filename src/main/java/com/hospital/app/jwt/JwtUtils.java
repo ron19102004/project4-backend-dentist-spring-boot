@@ -2,6 +2,7 @@ package com.hospital.app.jwt;
 
 import com.hospital.app.dto.auth.TokenResponse;
 import com.hospital.app.entities.account.User;
+import com.hospital.app.utils.VietNamTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -14,6 +15,7 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Component
 public class JwtUtils {
@@ -25,7 +27,8 @@ public class JwtUtils {
 
     private Jwt jwtAccessToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Instant instant = Instant.now();
+
+        Instant instant = VietNamTime.instantNow();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuedAt(instant)
@@ -37,7 +40,8 @@ public class JwtUtils {
 
     private Jwt jwtRefreshToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Instant instant = Instant.now();
+
+        Instant instant = VietNamTime.instantNow();
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuedAt(instant)
@@ -51,7 +55,7 @@ public class JwtUtils {
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, null);
         String refreshToken = jwtAccessToken(authentication).getTokenValue();
         Jwt jwtAccessToken = jwtRefreshToken(authentication);
-        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken,user.getId());
+        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken, user.getId());
     }
 
     public JwtCreateTokenDTO createToken(Authentication authentication) {
@@ -62,9 +66,9 @@ public class JwtUtils {
         }
         String refreshToken;
         if (authentication.getCredentials() instanceof Jwt jwt) {
-            Instant now = Instant.now();
+            Instant instant = VietNamTime.instantNow();
             Instant expiresAt = jwt.getExpiresAt();
-            Duration duration = Duration.between(now, expiresAt);
+            Duration duration = Duration.between(instant, expiresAt);
             long daysUntilExpired = duration.toDays();
             if (daysUntilExpired < 3) {
                 refreshToken = jwtRefreshToken(authentication).getTokenValue();
@@ -75,6 +79,6 @@ public class JwtUtils {
             refreshToken = jwtRefreshToken(authentication).getTokenValue();
         }
         Jwt jwtAccessToken = jwtAccessToken(authentication);
-        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken,user.getId());
+        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken, user.getId());
     }
 }

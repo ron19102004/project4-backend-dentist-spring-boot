@@ -7,6 +7,7 @@ import com.hospital.app.jwt.JwtCreateTokenDTO;
 import com.hospital.app.repositories.TokenRepository;
 import com.hospital.app.services.TokenService;
 import com.hospital.app.services.UserService;
+import com.hospital.app.utils.VietNamTime;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,27 +29,17 @@ public class TokenServiceImpl implements TokenService {
 
 
     @Override
-    public void validateAccessToken(String accessToken) {
+    public boolean validateAccessToken(String accessToken) {
         Token token = this.tokenRepository.findByAccessTokenOrRefreshToken(accessToken, accessToken);
-        if (token == null) {
-            throw ServiceException.builder()
-                    .clazz(TokenServiceImpl.class)
-                    .message("Không tìm thấy token")
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
+        if (token == null || token.getExpiredAt().before(VietNamTime.dateNow())) {
+            return false;
         }
-        if (token.getExpiredAt().before(new Date())) {
-            throw ServiceException.builder()
-                    .clazz(TokenServiceImpl.class)
-                    .message("Token đã hết hạn")
-                    .status(HttpStatus.FORBIDDEN)
-                    .build();
-        }
+        return true;
     }
 
     private void cleanUpTokens(List<Token> tokens) {
         List<Token> expiredTokens = tokens.stream()
-                .filter(token -> token.getExpiredAt().before(new Date()))
+                .filter(token -> token.getExpiredAt().before(VietNamTime.dateNow()))
                 .toList();
         if (!expiredTokens.isEmpty()) {
             this.tokenRepository.deleteAll(expiredTokens);

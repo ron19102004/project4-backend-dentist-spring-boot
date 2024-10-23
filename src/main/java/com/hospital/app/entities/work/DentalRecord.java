@@ -6,6 +6,7 @@ import com.hospital.app.entities.account.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)

@@ -77,12 +77,12 @@ public class SecurityConf {
 
         http.authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers(
-                                        "/api/auth/**",
-                                        "/ws/**",
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**").permitAll()
-                                .anyRequest().authenticated())
+//                                .requestMatchers(
+//                                        "/api/auth/**",
+//                                        "/ws/**",
+//                                        "/swagger-ui/**",
+//                                        "/v3/api-docs/**").permitAll()
+                                .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtToUserConverter)))
                 .sessionManagement(conf -> conf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exp -> exp

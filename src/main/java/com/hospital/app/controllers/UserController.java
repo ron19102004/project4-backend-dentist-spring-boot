@@ -20,13 +20,9 @@ public class UserController {
     @Autowired
     private UserService userService;
     @GetMapping("/me")
+    @PreAuthorize(PreAuthUtil.HAS_AUTHENTICATED)
     public ResponseEntity<?> getUserDetails(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(user);
-    }
-    @GetMapping("/test")
-    @PreAuthorize(PreAuthUtil.permitALL)
-    public ResponseEntity<?> test(){
-        return ResponseEntity.ok("Hello World");
     }
 }
 

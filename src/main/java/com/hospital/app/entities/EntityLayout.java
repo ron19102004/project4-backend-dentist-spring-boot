@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Data
@@ -17,5 +18,5 @@ public abstract class EntityLayout {
     @CreationTimestamp
     private Date createdAt;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date deletedAt;
+    private Date  deletedAt;
 }
