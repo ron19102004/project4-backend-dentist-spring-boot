@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Chào mừng bạn đến với Bệnh viện Nha khoa ABC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #4c7caf;
+        }
+        .content {
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4c54af;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Chào mừng, <span th:text="${name}">Người dùng</span>!</h1>
+    </div>
+
+    <div class="content">
+        <p>Xin chào <strong th:text="${name}">Người dùng</strong>,</p>
+        <p>Bạn đã đăng ký thành công tài khoản trên hệ thống của <strong>Bệnh viện Nha khoa <span th:text="${dentistName}">RoN</span></strong>.</p>
+        <p>Chúng tôi rất hân hạnh được đồng hành cùng bạn trong hành trình chăm sóc sức khỏe răng miệng.</p>
+        <p>Email đăng ký của bạn là: <strong th:text="${email}">email@example.com</strong></p>
+        <p>Nếu bạn cần bất kỳ hỗ trợ nào, hãy liên hệ với chúng tôi qua hotline <strong th:text="${hotline}">1800-1234</strong> hoặc email <strong th:text="${dentistEmail}">support@nhakhoaabc.vn</strong>.</p>
+        <p>Chúng tôi khuyến khích bạn đặt lịch khám ngay để nhận tư vấn và kiểm tra sức khỏe răng miệng định kỳ.</p>
+    </div>
+
+    <div class="footer">
+        <p>&copy; <span th:text="${yearCurrent}">2024</span> Bệnh viện Nha khoa <span th:text="${dentistName}">RoN</span>. Mọi quyền được bảo lưu.</p>
+    </div>
+</div>
+
+</body>
+</html>

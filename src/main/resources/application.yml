@@ -1,3 +1,7 @@
+info:
+  dentistName: RoLin
+  hotline: 0392477615
+  dentistEmail: dungtna.22itb@vku.udn.vn
 server:
   port: 8080
 mailer:

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class ExceptionGlobalHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseLayout<Object>> handler(Exception e) {
+        e.printStackTrace();
         if (e instanceof ServiceException serviceException) {
             return ResponseEntity
                     .status(serviceException.getStatus())
@@ -65,6 +67,15 @@ public class ExceptionGlobalHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ResponseLayout.builder()
                         .message("Địa chỉ truy cập không chính xác")
+                        .success(false)
+                        .build());
+    }
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(UsernameNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ResponseLayout.builder()
+                        .message(e.getMessage())
                         .success(false)
                         .build());
     }

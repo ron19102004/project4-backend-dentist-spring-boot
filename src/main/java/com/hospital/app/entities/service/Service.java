@@ -7,6 +7,7 @@ import com.hospital.app.entities.work.Appointment;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
@@ -23,7 +24,9 @@ public class Service extends EntityLayout {
     @Column(columnDefinition = "TEXT")
     private String poster;
     private String name;
+    @Column(nullable = false,unique = true)
     private String slug;
+    private BigDecimal price;
     //Relationships
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "service")

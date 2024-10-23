@@ -1,4 +1,4 @@
-package com.hospital.app.services.basic;
+package com.hospital.app.services.def;
 
 import java.util.List;
 

@@ -1,10 +1,7 @@
 package com.hospital.app.entities.account;
 
 import com.hospital.app.entities.EntityLayout;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -19,8 +16,9 @@ import java.util.List;
 public class Specialize extends EntityLayout {
     //Attributes
     private String name;
+    @Column(unique = true, nullable = false)
     private String slug;
     //Relationships
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "specialize")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "specialize")
     private List<Dentist> dentists;
 }

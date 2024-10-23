@@ -4,4 +4,5 @@ import com.hospital.app.entities.account.User;
 
 public interface MailerService {
     void sendOneTimePassword(User user, String otpCode);
+    void sendWelcomeEmail(User user);
 }

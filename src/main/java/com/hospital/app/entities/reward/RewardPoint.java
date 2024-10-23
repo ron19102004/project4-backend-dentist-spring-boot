@@ -1,5 +1,6 @@
 package com.hospital.app.entities.reward;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.account.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,12 +22,14 @@ import java.util.List;
 public class RewardPoint {
     //Attributes
     @Id
+    @JsonIgnore
     private Long id;
     private Long pointsUsed;
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
-    private Date lastUpdate;
+    private Date lastUpdatedAt;
     //Relationships
+    @JsonIgnore
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id", nullable = false)

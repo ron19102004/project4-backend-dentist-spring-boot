@@ -45,7 +45,6 @@ public class User extends EntityLayout implements UserDetails {
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private Dentist dentist;
-    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private RewardPoint rewardPoint;
     @JsonIgnore
@@ -61,6 +60,7 @@ public class User extends EntityLayout implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
     private List<Token> tokens;
 
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(this.role.name()));

@@ -9,7 +9,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.text.Normalizer;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 
 @SpringBootApplication
@@ -17,11 +19,12 @@ import java.util.Date;
 @EnableAsync
 public class HospitalBeApplication {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		SpringApplication.run(HospitalBeApplication.class, args);
-	}
-	@Bean
-	public PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

@@ -1,5 +1,6 @@
 package com.hospital.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ public abstract class EntityLayout {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date  deletedAt;
 }

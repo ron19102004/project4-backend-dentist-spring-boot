@@ -30,7 +30,7 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public Reward getById(Long id) {
-        return this.rewardRepository.findById(id).orElse(null);
+        return this.rewardRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
@@ -49,9 +49,10 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public void update(Object o) {
+    public void update(Long id, Object o) {
 
     }
+
     @Transactional
     @Override
     public void delete(Long id) {
