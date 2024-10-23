@@ -1,6 +1,6 @@
 package com.hospital.app.mappers;
 
-import com.hospital.app.entities.User;
+import com.hospital.app.entities.account.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;

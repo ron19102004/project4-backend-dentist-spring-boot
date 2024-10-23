@@ -1,8 +1,8 @@
 package com.hospital.app.websocket;
 
 
-import com.hospital.app.entities.User;
-import com.hospital.app.helpers.ResponseLayout;
+import com.hospital.app.entities.account.User;
+import com.hospital.app.utils.ResponseLayout;
 import com.hospital.app.mappers.UserWebsocketDetailsMapper;
 import com.hospital.app.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,6 @@ public class ChatWebsocketController {
     @SendTo("/topic/connect")
     public ResponseLayout<Object> addUser(Long id) {
         User user = User.builder()
-                .id(id)
                 .username("dung")
                 .password("123456")
                 .build();

@@ -1,15 +1,13 @@
 package com.hospital.app.jwt;
 
-import com.hospital.app.dto.TokenDTO;
-import com.hospital.app.entities.User;
+import com.hospital.app.dto.auth.TokenResponse;
+import com.hospital.app.entities.account.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
@@ -25,7 +23,7 @@ public class JwtUtils {
     @Qualifier("jwtRefreshTokenEncoder")
     private JwtEncoder jwtRefreshTokenEncoder;
 
-    private String genAccessToken(Authentication authentication){
+    private Jwt jwtAccessToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Instant instant = Instant.now();
 
@@ -34,9 +32,10 @@ public class JwtUtils {
                 .expiresAt(instant.plus(15, ChronoUnit.DAYS))
                 .subject(user.getId().toString())
                 .build();
-        return  jwtAccessTokenEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+        return jwtAccessTokenEncoder.encode(JwtEncoderParameters.from(claimsSet));
     }
-    private String genRefreshToken(Authentication authentication){
+
+    private Jwt jwtRefreshToken(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Instant instant = Instant.now();
 
@@ -45,30 +44,37 @@ public class JwtUtils {
                 .expiresAt(instant.plus(30, ChronoUnit.DAYS))
                 .subject(user.getId().toString())
                 .build();
-        return  jwtRefreshTokenEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+        return jwtRefreshTokenEncoder.encode(JwtEncoderParameters.from(claimsSet));
     }
 
-    public TokenDTO createToken(Authentication authentication){
-        if(!(authentication.getPrincipal() instanceof User user)){
+    public JwtCreateTokenDTO createToken(User user) {
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, null);
+        String refreshToken = jwtAccessToken(authentication).getTokenValue();
+        Jwt jwtAccessToken = jwtRefreshToken(authentication);
+        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken,user.getId());
+    }
+
+    public JwtCreateTokenDTO createToken(Authentication authentication) {
+        if (!(authentication.getPrincipal() instanceof User user)) {
             throw new BadCredentialsException(
                     MessageFormat.format("principal {0} is not of User type",
-                    authentication.getPrincipal().getClass()));
+                            authentication.getPrincipal().getClass()));
         }
         String refreshToken;
-        if(authentication.getCredentials() instanceof Jwt jwt){
+        if (authentication.getCredentials() instanceof Jwt jwt) {
             Instant now = Instant.now();
             Instant expiresAt = jwt.getExpiresAt();
-            Duration duration = Duration.between(now,expiresAt);
+            Duration duration = Duration.between(now, expiresAt);
             long daysUntilExpired = duration.toDays();
-            if (daysUntilExpired < 3){
-                refreshToken = genRefreshToken(authentication);
+            if (daysUntilExpired < 3) {
+                refreshToken = jwtRefreshToken(authentication).getTokenValue();
             } else {
                 refreshToken = jwt.getTokenValue();
             }
         } else {
-            refreshToken = genRefreshToken(authentication);
+            refreshToken = jwtRefreshToken(authentication).getTokenValue();
         }
-        String accessToken = genAccessToken(authentication);
-        return new TokenDTO(accessToken,refreshToken,user.getId());
+        Jwt jwtAccessToken = jwtAccessToken(authentication);
+        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken,user.getId());
     }
 }

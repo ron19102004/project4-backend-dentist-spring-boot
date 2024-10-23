@@ -1,6 +1,6 @@
 package com.hospital.app.mailer;
 
-import com.hospital.app.entities.User;
+import com.hospital.app.entities.account.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;

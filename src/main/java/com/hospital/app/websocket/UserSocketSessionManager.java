@@ -1,6 +1,6 @@
 package com.hospital.app.websocket;
 
-import com.hospital.app.entities.User;
+import com.hospital.app.entities.account.User;
 import com.hospital.app.mappers.UserWebsocketDetailsMapper;
 import lombok.Getter;
 import org.springframework.stereotype.Component;

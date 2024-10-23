@@ -1,8 +1,9 @@
 package com.hospital.app.services;
 
-import com.hospital.app.entities.User;
+import com.hospital.app.entities.account.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.UserDetailsManager;
 
-public interface UserService extends UserDetailsManager {
+public interface UserService extends UserDetailsService {
     User findById(Long id);
 }

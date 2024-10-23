@@ -1,4 +1,4 @@
-package com.hospital.app.helpers;
+package com.hospital.app.utils;
 
 import lombok.Builder;
 import lombok.Getter;

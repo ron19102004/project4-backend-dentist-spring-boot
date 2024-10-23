@@ -1,6 +1,9 @@
 package com.hospital.app.jwt;
 
-import com.hospital.app.entities.User;
+import com.hospital.app.entities.account.User;
+import com.hospital.app.services.TokenService;
+import com.hospital.app.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -14,11 +17,14 @@ import java.util.Collections;
 @Component
 public class JwtToUserConverter implements
         Converter<Jwt, UsernamePasswordAuthenticationToken> {
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private UserService userService;
     @Override
     public UsernamePasswordAuthenticationToken convert(Jwt jwt) {
-        User user = User.builder()
-                .id(Long.valueOf(jwt.getSubject()))
-                .build();
-        return new UsernamePasswordAuthenticationToken(user,jwt, Collections.emptyList());
+        this.tokenService.validateAccessToken(jwt.getTokenValue());
+        User user = this.userService.findById(Long.parseLong(jwt.getSubject()));
+        return new UsernamePasswordAuthenticationToken(user,jwt, user.getAuthorities());
     }
 }
