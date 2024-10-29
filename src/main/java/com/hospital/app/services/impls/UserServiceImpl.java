@@ -30,13 +30,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) {
+    public User findById(final Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
     @Transactional
     @Override
-    public User changeRole(UserChangeRoleRequest userChangeRoleRequest) {
+    public User changeRole(final UserChangeRoleRequest userChangeRoleRequest) {
         User user = this.findById(userChangeRoleRequest.userId());
         if (user == null) {
             throw new UsernameNotFoundException("Người dùng không tồn tại");
@@ -44,5 +44,15 @@ public class UserServiceImpl implements UserService {
         user.setRole(userChangeRoleRequest.role());
         this.entityManager.merge(user);
         return user;
+    }
+    @Transactional
+    @Override
+    public void resetRole(final Long id) {
+        User user = this.findById(id);
+        if (user == null) {
+            throw new UsernameNotFoundException("Người dùng không tồn tại");
+        }
+        user.setRole(Role.PATIENT);
+        this.entityManager.merge(user);
     }
 }

@@ -38,6 +38,8 @@ public class User extends EntityLayout implements UserDetails {
     private String email;
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(columnDefinition = "LONGTEXT")
+    private String tokenResetPassword;
     //Relationships
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)

@@ -11,10 +11,10 @@ public class Slugify {
         return pattern.matcher(normalized).replaceAll("");
     }
     public static String toSlug(String input) {
-        String slug = removeVietnameseAccents(input).toLowerCase();
-        slug = slug.replaceAll("[đ]", "d");
-        slug = slug.replaceAll("[^a-zA-Z0-9\\s]", "");
-        slug = slug.replaceAll("\\s+", "-");
-        return slug;
+        return removeVietnameseAccents(input)
+                .toLowerCase()
+                .replaceAll("đ", "d")
+                .replaceAll("[^a-zA-Z0-9\\s]", "")
+                .replaceAll("\\s+", "-");
     }
 }

@@ -23,11 +23,11 @@ public class TokenServiceImpl implements TokenService {
     private UserService userService;
     @PersistenceContext
     private EntityManager entityManager;
-    private final int MAX_TOKEN_LOGIN = 5;
+    private static final int MAX_TOKEN_LOGIN = 5;
 
 
     @Override
-    public boolean validateAccessToken(String accessToken) {
+    public boolean validateAccessToken(final String accessToken) {
         Token token = this.tokenRepository.findByAccessTokenOrRefreshToken(accessToken, accessToken);
         if (token == null || token.getExpiredAt().before(VietNamTime.dateNow())) {
             return false;
@@ -56,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void saveToken(JwtCreateTokenDTO jwtCreateTokenDTO, boolean isMobile) {
+    public void saveToken(final JwtCreateTokenDTO jwtCreateTokenDTO, final boolean isMobile) {
         List<Token> tokens = this.tokenRepository.findAllByUserIdOrderByIdAsc(jwtCreateTokenDTO.userId());
         cleanUpTokens(tokens);
         User user = this.userService.findById(jwtCreateTokenDTO.userId());
@@ -75,7 +75,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void deleteTokenByAccessToken(String accessToken) {
+    public void deleteTokenByAccessToken(final String accessToken) {
         Token token = this.tokenRepository.findByAccessToken(accessToken);
         if (token != null) {
             this.tokenRepository.delete(token);

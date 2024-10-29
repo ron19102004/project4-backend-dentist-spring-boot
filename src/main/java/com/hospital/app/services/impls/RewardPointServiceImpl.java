@@ -16,7 +16,7 @@ public class RewardPointServiceImpl implements RewardPointService {
     private EntityManager entityManager;
 
     @Override
-    public RewardPoint saveRewardPoint(RewardPoint rewardPoint) {
+    public RewardPoint saveRewardPoint(final RewardPoint rewardPoint) {
         return this.rewardPointRepository.save(rewardPoint);
     }
 }

@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.BadJwtException;
+import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -30,6 +32,27 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
+
+    @ExceptionHandler(BadJwtException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(BadJwtException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ResponseLayout.builder()
+                        .message("Token không hợp lệ")
+                        .success(false)
+                        .build());
+    }
+
+    @ExceptionHandler(JwtValidationException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(JwtValidationException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ResponseLayout.builder()
+                        .message("Token đã hết hạn. Vui lòng khởi tạo token khác")
+                        .success(false)
+                        .build());
+    }
+
     @ExceptionHandler(RateLimitException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(RateLimitException e) {
         return ResponseEntity
@@ -39,6 +62,7 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(BadCredentialsException e) {
         return ResponseEntity
@@ -78,6 +102,7 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(UsernameNotFoundException e) {
         return ResponseEntity

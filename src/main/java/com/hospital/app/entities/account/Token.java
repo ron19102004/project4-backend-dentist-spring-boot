@@ -18,9 +18,9 @@ public class Token extends EntityLayout {
     //Attributes
     @ColumnDefault("FALSE")
     private Boolean isMobile;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String accessToken;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String refreshToken;
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiredAt;

@@ -5,7 +5,9 @@ import com.hospital.app.entities.account.User;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
 
 public interface AuthService {
-    User register(RegisterRequest registerRequest);
-    void saveToken(JwtCreateTokenDTO jwtCreateTokenDTO, String userAgent);
-    void refreshToken(String accessTokenOld,JwtCreateTokenDTO jwtCreateTokenDTO, String userAgent);
+    User register(final RegisterRequest registerRequest);
+    void saveToken(final JwtCreateTokenDTO jwtCreateTokenDTO, final String userAgent);
+    void refreshToken(final String accessTokenOld,final JwtCreateTokenDTO jwtCreateTokenDTO, final String userAgent);
+    void resetPasswordRequest(final String email);
+    void resetPasswordHandle(final String token);
 }

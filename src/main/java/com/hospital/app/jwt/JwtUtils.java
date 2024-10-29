@@ -2,9 +2,11 @@ package com.hospital.app.jwt;
 
 import com.hospital.app.dto.auth.TokenResponse;
 import com.hospital.app.entities.account.User;
+import com.hospital.app.exception.ServiceException;
 import com.hospital.app.utils.VietNamTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,7 +17,9 @@ import java.text.MessageFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
+import java.util.Map;
+import java.util.function.Consumer;
+
 
 @Component
 public class JwtUtils {
@@ -24,8 +28,31 @@ public class JwtUtils {
     @Autowired
     @Qualifier("jwtRefreshTokenEncoder")
     private JwtEncoder jwtRefreshTokenEncoder;
+    @Autowired
+    private JwtDecoder jwtAccessTokenDecoder;
 
-    private Jwt jwtAccessToken(Authentication authentication) {
+    public String encodeToken(final TokenDTO tokenDTO, final long amountToAdd) {
+
+        Instant instant = VietNamTime.instantNow();
+        JwtClaimsSet.Builder claimsSetBuilder = JwtClaimsSet.builder()
+                .issuedAt(instant)
+                .expiresAt(instant.plus(amountToAdd, ChronoUnit.MINUTES))
+                .subject(tokenDTO.subject());
+        tokenDTO.claims().forEach(claimsSetBuilder::claim);
+        JwtClaimsSet claimsSet = claimsSetBuilder.build();
+        return jwtAccessTokenEncoder
+                .encode(JwtEncoderParameters.from(claimsSet))
+                .getTokenValue();
+    }
+
+    public TokenDTO decodeToken(final String token) {
+        Jwt jwt = jwtAccessTokenDecoder.decode(token);
+        String subject = jwt.getSubject();
+        Map<String, Object> claims = jwt.getClaims();
+        return new TokenDTO(subject, claims);
+    }
+
+    private Jwt jwtAccessToken(final Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
         Instant instant = VietNamTime.instantNow();
@@ -38,7 +65,7 @@ public class JwtUtils {
         return jwtAccessTokenEncoder.encode(JwtEncoderParameters.from(claimsSet));
     }
 
-    private Jwt jwtRefreshToken(Authentication authentication) {
+    private Jwt jwtRefreshToken(final Authentication authentication) {
         User user = (User) authentication.getPrincipal();
 
         Instant instant = VietNamTime.instantNow();
@@ -51,14 +78,7 @@ public class JwtUtils {
         return jwtRefreshTokenEncoder.encode(JwtEncoderParameters.from(claimsSet));
     }
 
-    public JwtCreateTokenDTO createToken(User user) {
-        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, null);
-        String refreshToken = jwtAccessToken(authentication).getTokenValue();
-        Jwt jwtAccessToken = jwtRefreshToken(authentication);
-        return new JwtCreateTokenDTO(jwtAccessToken, refreshToken, user.getId());
-    }
-
-    public JwtCreateTokenDTO createToken(Authentication authentication) {
+    public JwtCreateTokenDTO createToken(final Authentication authentication) {
         if (!(authentication.getPrincipal() instanceof User user)) {
             throw new BadCredentialsException(
                     MessageFormat.format("principal {0} is not of User type",

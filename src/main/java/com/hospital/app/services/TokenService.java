@@ -4,8 +4,9 @@ import com.hospital.app.jwt.JwtCreateTokenDTO;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 public interface TokenService {
-    boolean validateAccessToken(String accessToken);
+    boolean validateAccessToken(final String accessToken);
 
-    void saveToken(JwtCreateTokenDTO jwtCreateTokenDTO, boolean isMobile);
-    void deleteTokenByAccessToken(String accessToken);
+    void saveToken(final JwtCreateTokenDTO jwtCreateTokenDTO, final boolean isMobile);
+
+    void deleteTokenByAccessToken(final String accessToken);
 }

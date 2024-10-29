@@ -1,5 +1,6 @@
 package com.hospital.app.controllers;
 
+import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.account.AccountantDentistCreateRequest;
 import com.hospital.app.dto.account.UserChangeRoleRequest;
 import com.hospital.app.entities.account.User;
@@ -8,6 +9,7 @@ import com.hospital.app.services.DentistService;
 import com.hospital.app.services.UserService;
 import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,26 +36,37 @@ public class UserController {
     }
 
     @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
-    @PostMapping("/newDentistOrAccountant")
+    @PostMapping("/reset-role/{id}")
+    @WithRateLimitRequest(limit = 10)
+    public ResponseEntity<ResponseLayout<Object>> resetRole(@NotNull @PathVariable("id") Long id) {
+        this.userService.resetRole(id);
+        return ResponseEntity.ok(ResponseLayout.builder()
+                .message("Đặt lại quyền thành công. Quyền hiện tại là người dùng")
+                .success(true)
+                .build());
+    }
+
+    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @PostMapping("/new-dentist-or-accountant")
     public ResponseEntity<ResponseLayout<Object>> createDentistOrAccountant(
             @RequestBody AccountantDentistCreateRequest accountantDentistCreateRequest) {
         if (accountantDentistCreateRequest.specializeId() == null || accountantDentistCreateRequest.specializeId() <= 0) {
             return ResponseEntity.ok(ResponseLayout.builder()
                     .data(this.accountantService.createAdvanceAccount(accountantDentistCreateRequest))
                     .success(true)
-                    .message("Thiết lập thành công")
+                    .message("Thiết lập thành công quyền thu ngân")
                     .build());
         }
         return ResponseEntity.ok(ResponseLayout.builder()
                 .data(this.dentistService.createAdvanceAccount(accountantDentistCreateRequest))
                 .success(true)
-                .message("Thiết lập thành công")
+                .message("Thiết lập thành công quyền bác sĩ")
                 .build());
 
     }
 
     @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
-    @PostMapping("/changeRoleUser")
+    @PostMapping("/change-role-user")
     public ResponseEntity<ResponseLayout<User>> changeRoleUser(
             @RequestBody UserChangeRoleRequest userChangeRoleRequest) {
         return ResponseEntity.ok(ResponseLayout

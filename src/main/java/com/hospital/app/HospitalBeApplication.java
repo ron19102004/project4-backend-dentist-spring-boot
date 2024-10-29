@@ -1,30 +1,21 @@
 package com.hospital.app;
 
-import com.hospital.app.utils.VietNamTime;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.text.Normalizer;
-import java.util.Date;
-import java.util.regex.Pattern;
-
-
 @SpringBootApplication
-@EnableConfigurationProperties
 @EnableAsync
 public class HospitalBeApplication {
-
-    public static void main(String[] args) {
-		SpringApplication.run(HospitalBeApplication.class, args);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+    public static void main(String[] args) {
+		SpringApplication.run(HospitalBeApplication.class, args);
     }
 }

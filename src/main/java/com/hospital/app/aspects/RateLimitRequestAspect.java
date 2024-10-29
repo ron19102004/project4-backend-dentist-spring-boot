@@ -2,6 +2,7 @@ package com.hospital.app.aspects;
 
 import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.exception.RateLimitException;
+import com.hospital.app.utils.TimeFormatter;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,9 @@ public class RateLimitRequestAspect {
         cleanUpTimeRequests(timeCurrent, withRateLimitRequest.duration());
         timeRequests.add(timeCurrent);
         if (timeRequests.size() >= withRateLimitRequest.limit()) {
-            String message = "Quá nhiều truy vấn tại " + requestAttributes.getRequest().getRequestURI() + "! Vui lòng thử lại sau  " + withRateLimitRequest.duration() + " giây!";
+            long tryOnTime = withRateLimitRequest.duration() - (timeCurrent - timeRequests.get(0));
+            String message = "Quá nhiều truy vấn tại " + requestAttributes.getRequest().getRequestURI() + "! Vui lòng thử lại sau  "
+                    + TimeFormatter.formatMillisecondsToHMS(tryOnTime);
             throw new RateLimitException(message);
         }
     }

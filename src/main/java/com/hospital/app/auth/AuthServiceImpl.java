@@ -7,15 +7,24 @@ import com.hospital.app.entities.reward.RewardPoint;
 import com.hospital.app.exception.ServiceException;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
 import com.hospital.app.jwt.JwtUtils;
+import com.hospital.app.jwt.TokenDTO;
 import com.hospital.app.mailer.MailerService;
 import com.hospital.app.repositories.UserRepository;
 import com.hospital.app.services.RewardPointService;
 import com.hospital.app.services.TokenService;
+import com.hospital.app.services.impls.AccountantServiceImpl;
+import com.hospital.app.utils.PWUtil;
 import com.hospital.app.utils.VietNamTime;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -31,6 +40,62 @@ public class AuthServiceImpl implements AuthService {
     private TokenService tokenService;
     @Autowired
     private RewardPointService rewardPointService;
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Transactional
+    @Override
+    public void resetPasswordRequest(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            throw ServiceException.builder()
+                    .message("Tài khoản người dùng không tồn tại")
+                    .clazz(AuthServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        String password = PWUtil.generate(10);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("password", password);
+        String token = jwtUtils.encodeToken(TokenDTO.builder()
+                .claims(claims)
+                .subject(email)
+                .build(), 5);
+        user.setTokenResetPassword(token);
+        this.entityManager.merge(user);
+        mailerService.requestResetPassword(user,token,claims);
+    }
+    @Transactional
+    @Override
+    public void resetPasswordHandle(String token) {
+        TokenDTO tokenDTO = jwtUtils.decodeToken(token);
+        User user = userRepository.findByEmail(tokenDTO.subject()).orElse(null);
+        if (user == null) {
+            throw ServiceException.builder()
+                    .message("Tài khoản người dùng không tồn tại")
+                    .clazz(AuthServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        if (user.getTokenResetPassword() == null ){
+            throw ServiceException.builder()
+                    .clazz(AuthServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("Không tìm thấy token khôi phục")
+                    .build();
+        }
+        if (!user.getTokenResetPassword().equals(token)){
+            throw ServiceException.builder()
+                    .clazz(AuthServiceImpl.class)
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .message("Token không hợp lệ")
+                    .build();
+        }
+        String password = (String) tokenDTO.claims().get("password");
+        user.setPassword(passwordEncoder.encode(password));
+        user.setTokenResetPassword(null);
+        this.entityManager.merge(user);
+    }
 
     @Override
     public void saveToken(JwtCreateTokenDTO jwtCreateTokenDTO, String userAgent) {

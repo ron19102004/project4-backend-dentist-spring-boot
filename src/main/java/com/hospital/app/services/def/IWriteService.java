@@ -1,7 +1,7 @@
 package com.hospital.app.services.def;
 
 public interface IWriteService<Entity, CreateDTO, UpdateDTO, DataTypeOfPrimaryKey> {
-    Entity create(CreateDTO dto);
-    void update(DataTypeOfPrimaryKey id, UpdateDTO dto);
-    void delete(DataTypeOfPrimaryKey id);
+    Entity create(final CreateDTO dto);
+    void update(final DataTypeOfPrimaryKey id, final UpdateDTO dto);
+    void delete(final DataTypeOfPrimaryKey id);
 }

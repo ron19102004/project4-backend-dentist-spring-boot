@@ -1,3 +1,7 @@
+mailInfoCustom:
+  verifyResetPasswordFrontEndURL: http://localhost:5173/auth/verify-reset-password
+app:
+  url: http://localhost:8080
 info:
   dentistName: RoLin
   hotline: 0392477615

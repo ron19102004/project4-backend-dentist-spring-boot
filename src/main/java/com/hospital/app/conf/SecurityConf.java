@@ -55,6 +55,7 @@ public class SecurityConf {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true); // Cho phép gửi cookie
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("http://localhost:5173");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

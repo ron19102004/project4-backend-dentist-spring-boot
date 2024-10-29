@@ -2,11 +2,10 @@ package com.hospital.app.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.time.Instant;
+
 import java.util.Date;
 
 @Data

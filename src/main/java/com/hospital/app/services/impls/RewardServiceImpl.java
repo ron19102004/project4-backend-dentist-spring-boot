@@ -29,12 +29,12 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public Reward getById(Long id) {
+    public Reward getById(final Long id) {
         return this.rewardRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
-    public Reward create(RewardCreateRequest rewardCreateRequest) {
+    public Reward create(final RewardCreateRequest rewardCreateRequest) {
         if (rewardCreateRequest.points() <= 0) {
             throw ServiceException.builder()
                     .status(HttpStatus.BAD_REQUEST)
@@ -49,13 +49,13 @@ public class RewardServiceImpl implements RewardService {
     }
 
     @Override
-    public void update(Long id, Object o) {
+    public void update(final Long id, final Object o) {
 
     }
 
     @Transactional
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Reward reward = this.getById(id);
         if (reward == null) {
             throw ServiceException.builder()

@@ -2,9 +2,9 @@ package com.hospital.app.aspects;
 
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.exception.RateLimitException;
+import com.hospital.app.utils.TimeFormatter;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -29,8 +29,9 @@ public class RateLimitIPAddressAspect {
         requestCounts.get(key).add(currentTime);
         cleanUpRequestCounts(currentTime, withRateLimitIPAddress.duration());
         if (requestCounts.get(key).size() > withRateLimitIPAddress.limit()) {
+            long tryOnTime = withRateLimitIPAddress.duration() - (currentTime - requestCounts.get(key).get(0));
             String message = "Quá nhiều truy vấn tại  " + requestAttributes.getRequest().getRequestURI() + " từ IP " +
-                    key + "! Vui lòng thử lại sau " + withRateLimitIPAddress.duration() + " giây!";
+                    key + "! Vui lòng thử lại sau " + TimeFormatter.formatMillisecondsToHMS(tryOnTime);
             throw new RateLimitException(message);
         }
     }
@@ -39,6 +40,13 @@ public class RateLimitIPAddressAspect {
         requestCounts.values().forEach(l -> {
             l.removeIf(t -> timeIsTooOld(currentTime, t, rateDuration));
         });
+        List<String> keysToRemove = new ArrayList<>();
+        for (String key : requestCounts.keySet()) {
+            if (requestCounts.get(key).isEmpty()){
+                keysToRemove.add(key);
+            }
+        }
+        keysToRemove.forEach(requestCounts::remove);
     }
 
     private boolean timeIsTooOld(final long currentTime, final long timeToCheck, final long rateDuration) {

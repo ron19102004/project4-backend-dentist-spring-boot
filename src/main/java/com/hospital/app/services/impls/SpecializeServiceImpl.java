@@ -30,12 +30,12 @@ public class SpecializeServiceImpl implements SpecializeService {
     }
 
     @Override
-    public Specialize getById(Long id) {
+    public Specialize getById(final Long id) {
         return this.specializeRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
-    public Specialize create(SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
+    public Specialize create(final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
         return this.specializeRepository.save(Specialize.builder()
                 .name(specializeCreateUpdateRequest.name())
                 .slug(Slugify.toSlug(specializeCreateUpdateRequest.name()))
@@ -44,7 +44,7 @@ public class SpecializeServiceImpl implements SpecializeService {
 
     @Transactional
     @Override
-    public void update(Long id, SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
+    public void update(final Long id, final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
         Specialize specialize = this.getById(id);
         if (specialize == null) {
             throw ServiceException.builder()
@@ -60,7 +60,7 @@ public class SpecializeServiceImpl implements SpecializeService {
 
     @Transactional
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Specialize specialize = this.getById(id);
         if (specialize == null) {
             throw ServiceException.builder()

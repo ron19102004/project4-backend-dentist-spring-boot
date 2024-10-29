@@ -23,7 +23,7 @@ public class ServiceServiceImpl implements ServiceService {
     private EntityManager entityManager;
 
     @Override
-    public Service create(ServiceCreateRequest serviceCreateRequest) {
+    public Service create(final ServiceCreateRequest serviceCreateRequest) {
         return this.serviceRepository.save(Service.builder()
                 .name(serviceCreateRequest.name())
                 .slug(Slugify.toSlug(serviceCreateRequest.name()))
@@ -33,12 +33,12 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public void update(Long id, Object o) {
+    public void update(final Long id,final  Object o) {
 
     }
     @Transactional
     @Override
-    public void delete(Long id) {
+    public void delete(final Long id) {
         Service service = this.getById(id);
         if (service == null) {
             throw ServiceException.builder()
@@ -57,7 +57,7 @@ public class ServiceServiceImpl implements ServiceService {
     }
 
     @Override
-    public Service getById(Long id) {
+    public Service getById(final Long id) {
         return this.serviceRepository.findByIdAndDeletedAtIsNull(id);
     }
 }
