@@ -1,3 +1,7 @@
+app:
+  rate:
+    limit: 50
+    durations: 60000
 info:
   dentistName: RoLin
   hotline: 0392477615

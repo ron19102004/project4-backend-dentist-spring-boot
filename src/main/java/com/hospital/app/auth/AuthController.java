@@ -1,5 +1,6 @@
 package com.hospital.app.auth;
 
+import com.hospital.app.annotations.WithRateLimitProtection;
 import com.hospital.app.dto.auth.LoginRequest;
 import com.hospital.app.dto.auth.RefreshTokenRequest;
 import com.hospital.app.dto.auth.RegisterRequest;
@@ -33,6 +34,12 @@ public class AuthController {
     private JwtAuthenticationProvider jwtRefreshTokenAuthProvider;
     @Autowired
     private AuthService authService;
+
+    @GetMapping("/forgot-password")
+    @WithRateLimitProtection
+    public ResponseEntity<?> forgotPassword(@RequestParam String email) {
+        return ResponseEntity.ok("Test");
+    }
 
     @PostMapping("/register")
     public ResponseEntity<ResponseLayout<User>> register(@RequestBody RegisterRequest registerRequest) {

@@ -30,7 +30,15 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
-
+    @ExceptionHandler(RateLimitException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(RateLimitException e) {
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(ResponseLayout.builder()
+                        .message(e.getMessage())
+                        .success(false)
+                        .build());
+    }
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(BadCredentialsException e) {
         return ResponseEntity
