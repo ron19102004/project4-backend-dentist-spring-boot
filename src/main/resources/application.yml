@@ -1,7 +1,11 @@
 app:
   rate:
-    limit: 50
-    durations: 60000
+    ip_address:
+      limit: 50
+      duration: 60000
+    request:
+      limit: 50
+      duration: 1000
 info:
   dentistName: RoLin
   hotline: 0392477615

@@ -4,6 +4,7 @@ import com.hospital.app.exception.RateLimitException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -14,15 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Aspect
-public class RateLimitAspect {
+@Order(2)
+public class RateLimitIPAddressAspect {
     private final ConcurrentHashMap<String, List<Long>> requestCounts = new ConcurrentHashMap<>();
-    @Value("${app.rate.limit}")
+    @Value("${app.rate.ip_address.limit}")
     private int rateLimit;
 
-    @Value("${app.rate.durations}")
+    @Value("${app.rate.ip_address.duration}")
     private long rateDuration;
 
-    @Before("@annotation(com.hospital.app.annotations.WithRateLimitProtection)")
+    @Before("@annotation(com.hospital.app.annotations.WithRateLimitIPAddress)")
     public void rateLimit() {
         final ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final String key = requestAttributes.getRequest().getRemoteAddr();
@@ -31,15 +33,9 @@ public class RateLimitAspect {
         requestCounts.get(key).add(currentTime);
         cleanUpRequestCounts(currentTime);
         if (requestCounts.get(key).size() > rateLimit) {
-            StringBuilder message = new StringBuilder();
-            message.append("To many request at endpoint ")
-                    .append(requestAttributes.getRequest().getRequestURI())
-                    .append(" from IP ")
-                    .append(key)
-                    .append("! Please try again after ")
-                    .append(rateDuration)
-                    .append(" milliseconds!");
-            throw new RateLimitException(message.toString());
+            String message = "To many request at endpoint " + requestAttributes.getRequest().getRequestURI() + " from IP " +
+                    key + "! Please try again after " + rateDuration + " milliseconds!";
+            throw new RateLimitException(message);
         }
     }
 
