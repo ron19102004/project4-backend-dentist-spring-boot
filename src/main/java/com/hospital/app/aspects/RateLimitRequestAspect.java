@@ -1,5 +1,6 @@
 package com.hospital.app.aspects;
 
+import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.exception.RateLimitException;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -16,29 +17,24 @@ import java.util.ArrayList;
 @Order(1)
 public class RateLimitRequestAspect {
     private final ArrayList<Long> timeRequests = new ArrayList<>();
-    @Value("${app.rate.request.limit}")
-    private int rateLimit;
 
-    @Value("${app.rate.request.duration}")
-    private long rateDuration;
-
-    @Before("@annotation(com.hospital.app.annotations.WithRateLimitRequest)")
-    public void rateLimit() {
+    @Before("@annotation(withRateLimitRequest)")
+    public void rateLimit(WithRateLimitRequest withRateLimitRequest) {
         final ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         final long timeCurrent = System.currentTimeMillis();
-        cleanUpRequestCounts(timeCurrent);
+        cleanUpTimeRequests(timeCurrent, withRateLimitRequest.duration());
         timeRequests.add(timeCurrent);
-        if (timeRequests.size() >= rateLimit) {
-            String message = "To many request at endpoint " + requestAttributes.getRequest().getRequestURI() + "! Please try again after " + rateDuration + " milliseconds!";
+        if (timeRequests.size() >= withRateLimitRequest.limit()) {
+            String message = "Quá nhiều truy vấn tại " + requestAttributes.getRequest().getRequestURI() + "! Vui lòng thử lại sau  " + withRateLimitRequest.duration() + " giây!";
             throw new RateLimitException(message);
         }
     }
 
-    private void cleanUpRequestCounts(final long timeCurrent) {
-        timeRequests.removeIf(time -> isExpired(timeCurrent, time));
+    private void cleanUpTimeRequests(final long timeCurrent, final long rateDuration) {
+        timeRequests.removeIf(time -> isExpired(timeCurrent, time, rateDuration));
     }
 
-    private boolean isExpired(final long timeCurrent, final long timeToCheck) {
+    private boolean isExpired(final long timeCurrent, final long timeToCheck, final long rateDuration) {
         return timeCurrent - timeToCheck > rateDuration;
     }
 }
