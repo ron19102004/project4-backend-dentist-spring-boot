@@ -1,5 +1,6 @@
 package com.hospital.app.entities.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.EntityLayout;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +26,7 @@ public class Token extends EntityLayout {
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiredAt;
     //Relationships
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "userId",referencedColumnName = "id",nullable = false)
     private User user;

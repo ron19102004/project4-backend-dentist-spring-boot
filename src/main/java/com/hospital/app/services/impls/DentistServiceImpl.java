@@ -47,7 +47,7 @@ public class DentistServiceImpl implements DentistService {
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
         }
-        Specialize specialize = this.specializeService.getById(requestDto.specializeId());
+        Specialize specialize = this.specializeService.getByIdNormal(requestDto.specializeId());
         if (specialize == null) {
             throw ServiceException.builder()
                     .message("Không tìm thấy chuyên ngành")

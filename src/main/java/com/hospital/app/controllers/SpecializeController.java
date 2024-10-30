@@ -2,6 +2,7 @@ package com.hospital.app.controllers;
 
 import com.hospital.app.dto.specialize.SpecializeCreateUpdateRequest;
 import com.hospital.app.entities.account.Specialize;
+import com.hospital.app.mappers.SpecializeMapper;
 import com.hospital.app.services.SpecializeService;
 import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -19,9 +21,9 @@ public class SpecializeController {
     private SpecializeService specializeService;
 
     @GetMapping("/all")
-    public ResponseEntity<ResponseLayout<List<Specialize>>> getAllSpecializes() {
+    public ResponseEntity<ResponseLayout<List<SpecializeMapper>>> getAllSpecializes() {
         return ResponseEntity.ok(ResponseLayout
-                .<List<Specialize>>builder()
+                .<List<SpecializeMapper>>builder()
                 .data(this.specializeService.getAll())
                 .success(true)
                 .message("Lấy tất cả chuyên nghành thành công")
@@ -29,15 +31,16 @@ public class SpecializeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseLayout<Specialize>> getSpecializeById(@PathVariable("id") Long id) {
-        Specialize specialize = this.specializeService.getById(id);
+    public ResponseEntity<ResponseLayout<SpecializeMapper>> getSpecializeById(@PathVariable("id") Long id) {
+        SpecializeMapper specialize = this.specializeService.getById(id);
         return ResponseEntity.ok(ResponseLayout
-                .<Specialize>builder()
+                .<SpecializeMapper>builder()
                 .message(specialize != null ? "Lấy thông tin thành công" : "Không tìm thấy chuyên nghành")
                 .success(specialize != null)
                 .data(specialize)
                 .build());
     }
+
     @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
     @PostMapping("/new")
     public ResponseEntity<ResponseLayout<Specialize>> addSpecialize(@RequestBody SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
@@ -48,6 +51,7 @@ public class SpecializeController {
                 .message("Thêm chuyên ngành thành công")
                 .build());
     }
+
     @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
     @PutMapping("/{id}")
     public ResponseEntity<ResponseLayout<Object>> updateSpecialize(
@@ -59,6 +63,7 @@ public class SpecializeController {
                 .success(true)
                 .build());
     }
+
     @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseLayout<Object>> deleteSpecialize(@PathVariable("id") Long id) {

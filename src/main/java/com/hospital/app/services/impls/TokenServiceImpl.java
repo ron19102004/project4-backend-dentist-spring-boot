@@ -29,10 +29,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public boolean validateAccessToken(final String accessToken) {
         Token token = this.tokenRepository.findByAccessTokenOrRefreshToken(accessToken, accessToken);
-        if (token == null || token.getExpiredAt().before(VietNamTime.dateNow())) {
-            return false;
-        }
-        return true;
+        return token != null && !token.getExpiredAt().before(VietNamTime.dateNow());
     }
 
     private void cleanUpTokens(List<Token> tokens) {

@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotNull;
 public record SpecializeCreateUpdateRequest(
         @NotNull
         @NotEmpty
-        String name
+        String name,
+        @NotNull
+        @NotEmpty
+        String description
 ) {
 }

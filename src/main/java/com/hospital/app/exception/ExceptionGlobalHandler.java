@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.io.IOException;
+
 @ControllerAdvice
 public class ExceptionGlobalHandler {
     @ExceptionHandler(Exception.class)
@@ -25,6 +27,16 @@ public class ExceptionGlobalHandler {
                             .success(false)
                             .build());
         }
+        return ResponseEntity
+                .status(HttpStatus.BAD_GATEWAY)
+                .body(ResponseLayout.builder()
+                        .message(e.getMessage())
+                        .success(false)
+                        .build());
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(IOException e) {
         return ResponseEntity
                 .status(HttpStatus.BAD_GATEWAY)
                 .body(ResponseLayout.builder()
