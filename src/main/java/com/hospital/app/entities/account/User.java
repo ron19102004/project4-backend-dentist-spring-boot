@@ -8,11 +8,13 @@ import com.hospital.app.entities.work.Appointment;
 import com.hospital.app.entities.work.DentalRecord;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 
@@ -40,6 +42,11 @@ public class User extends EntityLayout implements UserDetails {
     private Role role;
     @Column(columnDefinition = "LONGTEXT")
     private String tokenResetPassword;
+    @ColumnDefault("FALSE")
+    private boolean isActiveTwoFactorAuthentication;
+    private String codeTwoFactorAuthentication;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date codeTFAExpirationAt;
     //Relationships
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
@@ -53,13 +60,13 @@ public class User extends EntityLayout implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Appointment> appointments;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<DentalRecord> dentalRecords;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Invoice> invoices;
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Token> tokens;
 
     @JsonIgnore

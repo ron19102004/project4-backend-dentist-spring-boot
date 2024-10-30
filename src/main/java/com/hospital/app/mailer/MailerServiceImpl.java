@@ -1,6 +1,7 @@
 package com.hospital.app.mailer;
 
 import com.hospital.app.entities.account.User;
+import com.hospital.app.utils.VietNamTime;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,14 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
     private String INFO_HOTLINE;
     @Value("${info.dentistEmail}")
     private String INFO_DENTIST_EMAIL;
-    @Value("${app.url}")
-    private String APP_URL;
-    @Value("${mailInfoCustom.verifyResetPasswordFrontEndURL}")
-    private String VERIFY_RESET_PW_FRONT_END_URL;
+    @Value("${system.frontendURL}")
+    private String FRONT_END_URL;
+    @Value("${system.backendURL}")
+    private String BACKEND_URL;
+    @Value("${mailInfoCustom.verifyResetPasswordFrontEndPoint}")
+    private String VERIFY_RESET_PW_FRONT_END_POINT;
+    @Value("${mailInfoCustom.loginFrontEndPoint}")
+    private String LOGIN_FRONT_END_POINT;
     private static final String ENCODING = "UTF-8";
     @Autowired
     private TemplateEngine templateEngine;
@@ -40,18 +45,18 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
 
     @Async
     @Override
-    public void sendOneTimePassword(User user, String otpCode) {
+    public void sendOneTimePassword(User user, String otpCode, Instant timeSent ) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, ENCODING);
-            mimeMessageHelper.setSubject("Xác thực OTP");
+            mimeMessageHelper.setSubject("Mã Xác Thực OTP");
             mimeMessageHelper.setFrom(APPLICATION_EMAIL);
-            mimeMessageHelper.setTo("user-email");
+            mimeMessageHelper.setTo(user.getEmail());
 
             Context context = new Context();
             context.setVariable("otp", otpCode);
             context.setVariable("name", user.getUsername());
-            context.setVariable("time_sent", Instant.now());
+            context.setVariable("time_sent", VietNamTime.toStringFormated(timeSent));
             String content = templateEngine.process(ONE_TIME_PASSWORD_TEMPLATE, context);
             mimeMessageHelper.setText(content, true);
             javaMailSender.send(mimeMessage);
@@ -66,9 +71,10 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, ENCODING);
-            mimeMessageHelper.setSubject("Đăng ký tài khoản thành công!");
+            mimeMessageHelper.setSubject("Đăng Ký Tài Khoản Thành Công!");
             mimeMessageHelper.setFrom(APPLICATION_EMAIL);
             mimeMessageHelper.setTo(user.getEmail());
+            mimeMessageHelper.setReplyTo("no-reply@yourdomain.com");;
 
             Context context = new Context();
             context.setVariable("name", user.getFullName());
@@ -88,24 +94,50 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
 
     @Async
     @Override
-    public void requestResetPassword(User user, String token, Map<String, Object> claims) {
+    public void sendResetPasswordRequest(User user, String token) {
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, ENCODING);
-            mimeMessageHelper.setSubject("Khôi phục Mật Khẩu!");
+            mimeMessageHelper.setSubject("Yêu Cầu Khôi Phục Mật Khẩu!");
             mimeMessageHelper.setFrom(APPLICATION_EMAIL);
             mimeMessageHelper.setTo(user.getEmail());
+            mimeMessageHelper.setReplyTo("no-reply@yourdomain.com");
 
-            String resetPasswordUrl = VERIFY_RESET_PW_FRONT_END_URL + "?token="+token;
+            String resetPasswordUrl = FRONT_END_URL + VERIFY_RESET_PW_FRONT_END_POINT + "?token=" + token;
 
             Context context = new Context();
             context.setVariable("account", user.getFullName());
-            context.setVariable("password", claims.get("password"));
             context.setVariable("resetPasswordUrl", resetPasswordUrl);
             context.setVariable("hotline", INFO_HOTLINE);
             context.setVariable("dentistEmail", INFO_DENTIST_EMAIL);
 
-            String content = templateEngine.process(RESET_PASSWORD_TEMPLATE, context);
+            String content = templateEngine.process(RESET_PASSWORD_REQUEST_TEMPLATE, context);
+            mimeMessageHelper.setText(content, true);
+            javaMailSender.send(mimeMessage);
+        } catch (MessagingException exception) {
+            log.error(exception.getMessage());
+        }
+    }
+
+    @Async
+    @Override
+    public void sendResetPasswordSuccess(User user, String password) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true, ENCODING);
+            mimeMessageHelper.setSubject("Khôi Phục Mật Khẩu Thành Công!");
+            mimeMessageHelper.setFrom(APPLICATION_EMAIL);
+            mimeMessageHelper.setTo(user.getEmail());
+            mimeMessageHelper.setReplyTo("no-reply@yourdomain.com");
+
+            Context context = new Context();
+            context.setVariable("account", user.getFullName());
+            context.setVariable("hotline", INFO_HOTLINE);
+            context.setVariable("password", password);
+            context.setVariable("dentistEmail", INFO_DENTIST_EMAIL);
+            context.setVariable("loginFrontEndURL", FRONT_END_URL + LOGIN_FRONT_END_POINT);
+
+            String content = templateEngine.process(RESET_PASSWORD_SUCCESS_TEMPLATE, context);
             mimeMessageHelper.setText(content, true);
             javaMailSender.send(mimeMessage);
         } catch (MessagingException exception) {

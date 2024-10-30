@@ -22,9 +22,12 @@ public class MailerConf {
     private boolean auth;
     @Value("${mailer.properties.mail.smtp.starttls.enable}")
     private boolean starttls_enable;
+    @Value("${mailer.properties.mail.debug}")
+    private boolean debug;
 
     /**
      * Configuration mail sender
+     *
      * @return JavaMailSender
      */
     @Bean
@@ -40,7 +43,7 @@ public class MailerConf {
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", auth);
         props.put("mail.smtp.starttls.enable", starttls_enable);
-        props.put("mail.debug", "true");
+        props.put("mail.debug", debug);
 
         return mailSender;
     }

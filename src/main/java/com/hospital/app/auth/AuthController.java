@@ -10,6 +10,7 @@ import com.hospital.app.entities.account.User;
 import com.hospital.app.exception.RateLimitException;
 import com.hospital.app.exception.ServiceException;
 import com.hospital.app.jwt.TokenDTO;
+import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
 import com.hospital.app.jwt.JwtUtils;
@@ -17,17 +18,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Default AuthController -> AuthControllerVer1
  */
@@ -71,7 +70,7 @@ public class AuthController {
         }
         return ResponseEntity.ok(ResponseLayout.builder()
                 .success(true)
-                .message("Xác thực thành công")
+                .message("Xác thực thành công. Vui lòng kiểm tra email để lấy mật khẩu")
                 .build());
     }
 
@@ -86,6 +85,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @WithRateLimitIPAddress(limit = 1, duration = 3000)
     public ResponseEntity<ResponseLayout<TokenResponse>> login(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestBody LoginRequest loginRequest) {
@@ -94,16 +94,10 @@ public class AuthController {
                         .unauthenticated(loginRequest.username(), loginRequest.password()));
         if (authentication.isAuthenticated()) {
             User user = (User) authentication.getPrincipal();
-            JwtCreateTokenDTO jwtCreateTokenDTO = jwtUtils.createToken(authentication);
-            this.authService.saveToken(jwtCreateTokenDTO, userAgent);
             return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
                     .message("Đăng nhập thành công")
                     .success(true)
-                    .data(TokenResponse.builder()
-                            .accessToken(jwtCreateTokenDTO.jwtAccessToken().getTokenValue())
-                            .refreshToken(jwtCreateTokenDTO.refreshToken())
-                            .user(user)
-                            .build())
+                    .data(this.authService.login(authentication, user, userAgent))
                     .build());
         }
         return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
@@ -113,6 +107,32 @@ public class AuthController {
                 .build());
     }
 
+    @PostMapping("/verify-otp")
+    @WithRateLimitIPAddress(limit = 1, duration = 3000)
+    public ResponseEntity<ResponseLayout<TokenResponse>> verifyOTP(
+            @RequestHeader(value = "User-Agent") String userAgent,
+            @RequestParam("otp") String otp,
+            @RequestParam("token") String token) {
+        return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
+                .message("Đăng nhập thành công")
+                .success(true)
+                .data(this.authService.verifyOTP(token, otp, userAgent))
+                .build());
+    }
+
+    @PostMapping("/change-tfa")
+    @PreAuthorize(PreAuthUtil.HAS_AUTHENTICATED)
+    @WithRateLimitIPAddress(limit = 1)
+    public ResponseEntity<ResponseLayout<TokenResponse>> changeTFA(@AuthenticationPrincipal User user) {
+        this.authService.changeTFAStatus(user);
+        return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
+                .message("Thay đổi thành công")
+                .success(true)
+                .data(null)
+                .build());
+    }
+
+    @WithRateLimitIPAddress(limit = 1)
     @PostMapping("/refresh-token")
     public ResponseEntity<ResponseLayout<TokenResponse>> token(
             @RequestHeader(value = "User-Agent") String userAgent,

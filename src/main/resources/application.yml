@@ -1,7 +1,9 @@
+system:
+  backendURL: http://localhost:8080
+  frontendURL: http://localhost:5173
 mailInfoCustom:
-  verifyResetPasswordFrontEndURL: http://localhost:5173/auth/verify-reset-password
-app:
-  url: http://localhost:8080
+  verifyResetPasswordFrontEndPoint: /auth/verify-reset-password
+  loginFrontEndPoint: /auth/login
 info:
   dentistName: RoLin
   hotline: 0392477615
@@ -19,6 +21,7 @@ mailer:
         auth: true
         starttls:
           enable: true
+      debug: false
 spring:
   application:
     name: Hospital-BE
