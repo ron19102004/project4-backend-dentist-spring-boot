@@ -35,6 +35,26 @@ public class ExceptionGlobalHandler {
                         .build());
     }
 
+    @ExceptionHandler(AuthorizationDeniedCustomException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(AuthorizationDeniedCustomException e) {
+        return ResponseEntity
+                .status(e.getHttpStatus())
+                .body(ResponseLayout.builder()
+                        .message(e.getMessage())
+                        .success(false)
+                        .build());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(AuthenticationException e) {
+        return ResponseEntity
+                .status(e.getHttpStatus())
+                .body(ResponseLayout.builder()
+                        .message(e.getMessage())
+                        .success(false)
+                        .build());
+    }
+
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(IOException e) {
         return ResponseEntity
@@ -54,7 +74,6 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
-
     @ExceptionHandler(JwtValidationException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(JwtValidationException e) {
         return ResponseEntity

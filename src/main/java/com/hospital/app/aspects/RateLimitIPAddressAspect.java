@@ -3,6 +3,8 @@ package com.hospital.app.aspects;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.exception.RateLimitException;
 import com.hospital.app.utils.TimeFormatter;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
@@ -11,6 +13,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,15 +26,15 @@ public class RateLimitIPAddressAspect {
     @Before("@annotation(withRateLimitIPAddress)")
     public void rateLimit(WithRateLimitIPAddress withRateLimitIPAddress) {
         final ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        final String key = requestAttributes.getRequest().getRemoteAddr();
+        final String ipAddress = requestAttributes.getRequest().getRemoteAddr();
         final long currentTime = System.currentTimeMillis();
-        requestCounts.putIfAbsent(key, new ArrayList<>());
-        requestCounts.get(key).add(currentTime);
+        requestCounts.putIfAbsent(ipAddress, new ArrayList<>());
+        requestCounts.get(ipAddress).add(currentTime);
         cleanUpRequestCounts(currentTime, withRateLimitIPAddress.duration());
-        if (requestCounts.get(key).size() > withRateLimitIPAddress.limit()) {
-            long tryOnTime = withRateLimitIPAddress.duration() - (currentTime - requestCounts.get(key).get(0));
+        if (requestCounts.get(ipAddress).size() > withRateLimitIPAddress.limit()) {
+            long tryOnTime = withRateLimitIPAddress.duration() - (currentTime - requestCounts.get(ipAddress).get(0));
             String message = "Quá nhiều truy vấn tại  " + requestAttributes.getRequest().getRequestURI() + " từ IP " +
-                    key + "! Vui lòng thử lại sau " + TimeFormatter.formatMillisecondsToHMS(tryOnTime);
+                    ipAddress + "! Vui lòng thử lại sau " + TimeFormatter.formatMillisecondsToHMS(tryOnTime);
             throw new RateLimitException(message);
         }
     }

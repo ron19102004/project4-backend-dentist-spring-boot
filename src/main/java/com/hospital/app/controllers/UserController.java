@@ -1,18 +1,18 @@
 package com.hospital.app.controllers;
 
+import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.account.AccountantDentistCreateRequest;
 import com.hospital.app.dto.account.UserChangeRoleRequest;
+import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.User;
 import com.hospital.app.services.AccountantService;
 import com.hospital.app.services.DentistService;
 import com.hospital.app.services.UserService;
-import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +30,12 @@ public class UserController {
     private AccountantService accountantService;
 
     @GetMapping("/me")
-    @PreAuthorize(PreAuthUtil.HAS_AUTHENTICATED)
+    @HasRole(justCheckAuthentication = true)
     public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(user);
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @PostMapping("/reset-role/{id}")
     @WithRateLimitRequest(limit = 10)
     public ResponseEntity<ResponseLayout<Object>> resetRole(@NotNull @PathVariable("id") Long id) {
@@ -46,7 +46,7 @@ public class UserController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @PostMapping("/new-dentist-or-accountant")
     public ResponseEntity<ResponseLayout<Object>> createDentistOrAccountant(
             @RequestBody AccountantDentistCreateRequest accountantDentistCreateRequest) {
@@ -65,7 +65,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @PostMapping("/change-role-user")
     public ResponseEntity<ResponseLayout<User>> changeRoleUser(
             @RequestBody UserChangeRoleRequest userChangeRoleRequest) {

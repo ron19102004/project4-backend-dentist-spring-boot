@@ -1,17 +1,18 @@
 package com.hospital.app.controllers;
 
+import com.hospital.app.annotations.HasRole;
+import com.hospital.app.annotations.WithRateLimitIPAddress;
+import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.specialize.SpecializeCreateUpdateRequest;
+import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.Specialize;
 import com.hospital.app.mappers.SpecializeMapper;
 import com.hospital.app.services.SpecializeService;
-import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,6 +22,7 @@ public class SpecializeController {
     private SpecializeService specializeService;
 
     @GetMapping("/all")
+    @WithRateLimitIPAddress(limit = 1,duration = 3000)
     public ResponseEntity<ResponseLayout<List<SpecializeMapper>>> getAllSpecializes() {
         return ResponseEntity.ok(ResponseLayout
                 .<List<SpecializeMapper>>builder()
@@ -31,6 +33,7 @@ public class SpecializeController {
     }
 
     @GetMapping("/{id}")
+    @WithRateLimitRequest(limit = 100)
     public ResponseEntity<ResponseLayout<SpecializeMapper>> getSpecializeById(@PathVariable("id") Long id) {
         SpecializeMapper specialize = this.specializeService.getById(id);
         return ResponseEntity.ok(ResponseLayout
@@ -41,7 +44,7 @@ public class SpecializeController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @PostMapping("/new")
     public ResponseEntity<ResponseLayout<Specialize>> addSpecialize(@RequestBody SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
         return ResponseEntity.ok(ResponseLayout
@@ -52,7 +55,7 @@ public class SpecializeController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @PutMapping("/{id}")
     public ResponseEntity<ResponseLayout<Object>> updateSpecialize(
             @PathVariable Long id,
@@ -64,7 +67,7 @@ public class SpecializeController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ADMIN_AUTHORITY)
+    @HasRole(roles = {Role.ADMIN})
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseLayout<Object>> deleteSpecialize(@PathVariable("id") Long id) {
         this.specializeService.delete(id);

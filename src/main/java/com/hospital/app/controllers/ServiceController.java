@@ -1,13 +1,13 @@
 package com.hospital.app.controllers;
 
+import com.hospital.app.annotations.HasRole;
 import com.hospital.app.dto.service.ServiceCreateRequest;
+import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.service.Service;
 import com.hospital.app.services.ServiceService;
-import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,7 +39,7 @@ public class ServiceController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ACCOUNTANT_AUTHORITY)
+    @HasRole(roles = {Role.ACCOUNTANT})
     @PostMapping("/new")
     private ResponseEntity<ResponseLayout<Service>> createService(@RequestBody ServiceCreateRequest serviceCreateRequest) {
         return ResponseEntity.ok(ResponseLayout
@@ -50,7 +50,7 @@ public class ServiceController {
                 .build());
     }
 
-    @PreAuthorize(PreAuthUtil.HAS_ACCOUNTANT_AUTHORITY)
+    @HasRole(roles = {Role.ACCOUNTANT})
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseLayout<Service>> deleteService(@PathVariable("id") Long id) {
         this.serviceService.delete(id);

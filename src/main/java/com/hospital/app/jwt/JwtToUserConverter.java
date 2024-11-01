@@ -10,8 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-
 /**
  * interface Converter<A,B> be used to change class from A to B
  */

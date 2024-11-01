@@ -44,7 +44,9 @@ public class User extends EntityLayout implements UserDetails {
     private String tokenResetPassword;
     @ColumnDefault("FALSE")
     private boolean isActiveTwoFactorAuthentication;
+    @JsonIgnore
     private String codeTwoFactorAuthentication;
+    @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date codeTFAExpirationAt;
     //Relationships

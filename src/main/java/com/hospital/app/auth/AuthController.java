@@ -1,5 +1,6 @@
 package com.hospital.app.auth;
 
+import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.auth.LoginRequest;
@@ -7,10 +8,7 @@ import com.hospital.app.dto.auth.RefreshTokenRequest;
 import com.hospital.app.dto.auth.RegisterRequest;
 import com.hospital.app.dto.auth.TokenResponse;
 import com.hospital.app.entities.account.User;
-import com.hospital.app.exception.RateLimitException;
 import com.hospital.app.exception.ServiceException;
-import com.hospital.app.jwt.TokenDTO;
-import com.hospital.app.utils.PreAuthUtil;
 import com.hospital.app.utils.ResponseLayout;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
 import com.hospital.app.jwt.JwtUtils;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -121,7 +118,7 @@ public class AuthController {
     }
 
     @PostMapping("/change-tfa")
-    @PreAuthorize(PreAuthUtil.HAS_AUTHENTICATED)
+    @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 1)
     public ResponseEntity<ResponseLayout<TokenResponse>> changeTFA(@AuthenticationPrincipal User user) {
         this.authService.changeTFAStatus(user);
