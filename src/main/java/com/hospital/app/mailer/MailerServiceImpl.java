@@ -103,7 +103,7 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
             mimeMessageHelper.setTo(user.getEmail());
             mimeMessageHelper.setReplyTo("no-reply@yourdomain.com");
 
-            String resetPasswordUrl = FRONT_END_URL + VERIFY_RESET_PW_FRONT_END_POINT + "?token=" + token;
+            String resetPasswordUrl = FRONT_END_URL + VERIFY_RESET_PW_FRONT_END_POINT + "/" + token;
 
             Context context = new Context();
             context.setVariable("account", user.getFullName());

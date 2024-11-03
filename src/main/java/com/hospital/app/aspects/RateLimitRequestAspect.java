@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 @Component
 @Aspect
-@Order(1)
+@Order(2)
 public class RateLimitRequestAspect {
     private final ArrayList<Long> timeRequests = new ArrayList<>();
 

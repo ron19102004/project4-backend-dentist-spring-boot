@@ -3,8 +3,6 @@ package com.hospital.app.aspects;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.exception.RateLimitException;
 import com.hospital.app.utils.TimeFormatter;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.core.annotation.Order;
@@ -13,13 +11,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Aspect
-@Order(2)
+@Order(3)
 public class RateLimitIPAddressAspect {
     private final ConcurrentHashMap<String, List<Long>> requestCounts = new ConcurrentHashMap<>();
 
