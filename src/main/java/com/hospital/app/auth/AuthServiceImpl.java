@@ -109,7 +109,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public TokenResponse login(Authentication authentication, User user, String userAgent) {
+    public TokenResponse generateLoginToken(Authentication authentication, User user, String userAgent) {
         if (user.isActiveTwoFactorAuthentication()) {
             User userDb = userRepository.findByEmail(user.getEmail()).orElse(user);
             String codeTFA = PWUtil.generateOTP(OTP_LENGTH);

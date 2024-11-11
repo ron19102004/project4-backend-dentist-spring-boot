@@ -17,7 +17,7 @@ public interface AuthService {
 
     void resetPasswordHandle(final String token);
 
-    TokenResponse login(final Authentication authentication, final User user, final String userAgent);
+    TokenResponse generateLoginToken(final Authentication authentication, final User user, final String userAgent);
 
     TokenResponse verifyOTP(final String token, final String otpCode, String userAgent);
     void changeTFAStatus(final User user);

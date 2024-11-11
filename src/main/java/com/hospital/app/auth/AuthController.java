@@ -3,12 +3,17 @@ package com.hospital.app.auth;
 import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.annotations.WithRateLimitRequest;
+import com.hospital.app.auth.futures.login.LoginFuture;
+import com.hospital.app.auth.futures.login.LoginFutureFactory;
+import com.hospital.app.auth.futures.login.LoginFutureFactoryImpl;
+import com.hospital.app.auth.futures.login.LoginResponseData;
 import com.hospital.app.dto.auth.LoginRequest;
 import com.hospital.app.dto.auth.RefreshTokenRequest;
 import com.hospital.app.dto.auth.RegisterRequest;
 import com.hospital.app.dto.auth.TokenResponse;
 import com.hospital.app.entities.account.User;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.repositories.UserRepository;
 import com.hospital.app.utils.ResponseLayout;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
 import com.hospital.app.jwt.JwtUtils;
@@ -24,6 +29,7 @@ import org.springframework.security.oauth2.jwt.JwtValidationException;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.web.bind.annotation.*;
+
 /**
  * Default AuthController -> AuthControllerVer1
  */
@@ -39,6 +45,8 @@ public class AuthController {
     private JwtAuthenticationProvider jwtRefreshTokenAuthProvider;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private UserRepository userRepository;
 
     @PostMapping("/reset-password")
     @WithRateLimitRequest
@@ -86,21 +94,17 @@ public class AuthController {
     public ResponseEntity<ResponseLayout<TokenResponse>> login(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationProvider
-                .authenticate(UsernamePasswordAuthenticationToken
-                        .unauthenticated(loginRequest.username(), loginRequest.password()));
-        if (authentication.isAuthenticated()) {
-            User user = (User) authentication.getPrincipal();
-            return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
-                    .message("Đăng nhập thành công")
-                    .success(true)
-                    .data(this.authService.login(authentication, user, userAgent))
-                    .build());
-        }
+        LoginFutureFactory loginFutureFactory = LoginFutureFactoryImpl.getInstance();
+        LoginFuture loginFuture = loginFutureFactory.get(loginRequest);
+        LoginResponseData loginResponseData = loginFuture.authenticate(authenticationProvider, userRepository, loginRequest);
+        TokenResponse tokenResponse = this.authService.generateLoginToken(
+                loginResponseData.authentication(),
+                loginResponseData.user(),
+                userAgent);
         return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()
-                .message("Đăng nhập thất bại")
-                .success(false)
-                .data(null)
+                .message("Đăng nhập thành công")
+                .success(true)
+                .data(tokenResponse)
                 .build());
     }
 

@@ -20,6 +20,7 @@ public class ServiceController {
 
     @GetMapping("/all")
     public ResponseEntity<ResponseLayout<List<Service>>> getAllServices() {
+        System.out.println(serviceService);
         return ResponseEntity.ok(ResponseLayout
                 .<List<Service>>builder()
                 .data(this.serviceService.getAll())
@@ -41,7 +42,7 @@ public class ServiceController {
 
     @HasRole(roles = {Role.ACCOUNTANT})
     @PostMapping("/new")
-    private ResponseEntity<ResponseLayout<Service>> createService(@RequestBody ServiceCreateRequest serviceCreateRequest) {
+    public ResponseEntity<ResponseLayout<Service>> createService(@RequestBody ServiceCreateRequest serviceCreateRequest) {
         return ResponseEntity.ok(ResponseLayout
                 .<Service>builder()
                 .data(this.serviceService.create(serviceCreateRequest))
