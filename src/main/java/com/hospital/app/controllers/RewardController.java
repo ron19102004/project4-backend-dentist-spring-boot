@@ -1,6 +1,7 @@
 package com.hospital.app.controllers;
 
 import com.hospital.app.annotations.HasRole;
+import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.dto.reward.RewardCreateRequest;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.reward.Reward;
@@ -19,6 +20,7 @@ public class RewardController {
     private RewardService rewardService;
 
     @GetMapping("/all")
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<List<Reward>>> getAllRewards() {
         return ResponseEntity.ok(ResponseLayout
                 .<List<Reward>>builder()
@@ -29,6 +31,7 @@ public class RewardController {
     }
 
     @GetMapping("/{id}")
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<Reward>> getRewardById(@PathVariable("id") Long id) {
         Reward reward = this.rewardService.getById(id);
         return ResponseEntity.ok(ResponseLayout
@@ -52,6 +55,7 @@ public class RewardController {
 
     @DeleteMapping("/{id}")
     @HasRole(roles = {Role.ACCOUNTANT})
+    @WithRateLimitIPAddress(duration = 10000,limit = 5)
     public ResponseEntity<ResponseLayout<Object>> deleteReward(@PathVariable("id") Long id) {
         this.rewardService.delete(id);
         return ResponseEntity.ok(ResponseLayout

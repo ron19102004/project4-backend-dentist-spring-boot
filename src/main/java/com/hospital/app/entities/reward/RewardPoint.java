@@ -24,6 +24,7 @@ public class RewardPoint {
     @Id
     @JsonIgnore
     private Long id;
+    private Long point;
     private Long pointsUsed;
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
@@ -34,6 +35,7 @@ public class RewardPoint {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id", nullable = false)
     private User user;
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "rewardPoint")
-    private List<RewardRedemptionHistory> rewardRedemptionHistories;
+    private List<RewardHistory> rewardHistories;
 }

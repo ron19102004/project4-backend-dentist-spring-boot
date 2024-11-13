@@ -63,12 +63,6 @@ public class User extends EntityLayout implements UserDetails {
     private List<Appointment> appointments;
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<DentalRecord> dentalRecords;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Invoice> invoices;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<Token> tokens;
 
     @JsonIgnore

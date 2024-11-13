@@ -1,6 +1,7 @@
 package com.hospital.app.controllers;
 
 import com.hospital.app.annotations.HasRole;
+import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.dto.service.ServiceCreateRequest;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.service.Service;
@@ -19,6 +20,7 @@ public class ServiceController {
     private ServiceService serviceService;
 
     @GetMapping("/all")
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<List<Service>>> getAllServices() {
         System.out.println(serviceService);
         return ResponseEntity.ok(ResponseLayout
@@ -30,6 +32,7 @@ public class ServiceController {
     }
 
     @GetMapping("/{id}")
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<Service>> getServiceById(@PathVariable("id") Long id) {
         Service service = this.serviceService.getById(id);
         return ResponseEntity.ok(ResponseLayout
@@ -53,6 +56,7 @@ public class ServiceController {
 
     @HasRole(roles = {Role.ACCOUNTANT})
     @DeleteMapping("/{id}")
+    @WithRateLimitIPAddress(duration = 10000,limit = 5)
     public ResponseEntity<ResponseLayout<Service>> deleteService(@PathVariable("id") Long id) {
         this.serviceService.delete(id);
         return ResponseEntity.ok(ResponseLayout

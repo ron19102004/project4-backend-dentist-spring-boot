@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface RewardRepository extends JpaRepository<Reward, Long> {
-    List<Reward> findAllByDeletedAtIsNull();
-    Reward findByIdAndDeletedAtIsNull(Long id);
+    List<Reward> findAllByDeletedAtIsNullAndIsOpened(Boolean isOpened);
+    Reward findByIdAndDeletedAtIsNullAndIsOpened(Long id,Boolean isOpened);
 }

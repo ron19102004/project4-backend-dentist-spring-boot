@@ -4,6 +4,7 @@ import com.hospital.app.dto.auth.RegisterRequest;
 import com.hospital.app.dto.auth.TokenResponse;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.User;
+import com.hospital.app.entities.reward.RewardHistory;
 import com.hospital.app.entities.reward.RewardPoint;
 import com.hospital.app.exception.ServiceException;
 import com.hospital.app.jwt.JwtCreateTokenDTO;
@@ -11,7 +12,7 @@ import com.hospital.app.jwt.JwtUtils;
 import com.hospital.app.jwt.TokenDTO;
 import com.hospital.app.mailer.MailerService;
 import com.hospital.app.repositories.UserRepository;
-import com.hospital.app.services.RewardPointService;
+import com.hospital.app.services.RewardHistoryService;
 import com.hospital.app.services.TokenService;
 import com.hospital.app.services.impls.AccountantServiceImpl;
 import com.hospital.app.utils.PWUtil;
@@ -45,11 +46,12 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private RewardPointService rewardPointService;
+    private RewardHistoryService rewardHistoryService;
     @PersistenceContext
     private EntityManager entityManager;
     private static final long TWO_FACTOR_AUTHENTICATION_EXPIRED_TIME = 1;
     private static final int OTP_LENGTH = 6;
+    private static final long POINT_WHEN_REGISTER_ACCOUNT = 10;
 
     @Transactional
     @Override
@@ -262,14 +264,14 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(registerRequest.password()))
                 .isActiveTwoFactorAuthentication(false)
                 .build());
-        RewardPoint rewardPoint = this.rewardPointService
-                .saveRewardPoint(RewardPoint.builder()
-                        .user(user)
-                        .pointsUsed(0L)
-                        .pointsUsed(0L)
-                        .lastUpdatedAt(VietNamTime.dateNow())
-                        .build());
-        user.setRewardPoint(rewardPoint);
+
+        RewardHistory rewardHistory = this.rewardHistoryService.plusPoint(
+                user.getId(),
+                POINT_WHEN_REGISTER_ACCOUNT,
+                "Chúc mừng " + user.getFullName() + "! Bạn đã đăng ký tài khoản thành công." +
+                        " Chúng tôi xin chúc bạn nhiều sức khoẻ và những trải nghiệm tuyệt vời cùng chúng tôi." +
+                        " Cảm ơn bạn đã lựa chọn và tin tưởng!");
+        user.setRewardPoint(rewardHistory.getRewardPoint());
         mailerService.sendWelcomeEmail(user);
         return user;
     }

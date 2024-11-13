@@ -2,7 +2,6 @@ package com.hospital.app.auth;
 
 import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
-import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.auth.futures.login.LoginFuture;
 import com.hospital.app.auth.futures.login.LoginFutureFactory;
 import com.hospital.app.auth.futures.login.LoginFutureFactoryImpl;
@@ -49,7 +48,6 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/reset-password")
-    @WithRateLimitRequest
     @WithRateLimitIPAddress(limit = 1, duration = 5 * 60000)
     public ResponseEntity<ResponseLayout<?>> forgotPassword(@RequestParam String email) {
         this.authService.resetPasswordRequest(email);
@@ -57,7 +55,6 @@ public class AuthController {
     }
 
     @PostMapping("/verify-reset-password")
-    @WithRateLimitRequest
     @WithRateLimitIPAddress(limit = 1, duration = 5000)
     public ResponseEntity<ResponseLayout<Object>> verifyNewPassword(@RequestParam String token) {
         try {

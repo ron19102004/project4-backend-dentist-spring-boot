@@ -26,12 +26,12 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public List<Reward> getAll() {
-        return this.rewardRepository.findAllByDeletedAtIsNull();
+        return this.rewardRepository.findAllByDeletedAtIsNullAndIsOpened(true);
     }
 
     @Override
     public Reward getById(final Long id) {
-        return this.rewardRepository.findByIdAndDeletedAtIsNull(id);
+        return this.rewardRepository.findByIdAndDeletedAtIsNullAndIsOpened(id, true);
     }
 
     @Override

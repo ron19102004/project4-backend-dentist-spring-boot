@@ -29,6 +29,9 @@ public class Dentist {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+    @Column(columnDefinition = "LONGTEXT")
+    private String description;
+    private Date deletedAt;
     //Relationships
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
@@ -40,9 +43,6 @@ public class Dentist {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id",name = "specializeId", nullable = false)
     private Specialize specialize;
-    @JsonIgnore
-    @OneToMany(mappedBy = "dentist",cascade = CascadeType.ALL)
-    private List<DentalRecord> dentalRecords;
     @JsonIgnore
     @OneToMany(mappedBy = "dentist", cascade = CascadeType.ALL)
     private List<Blog> blogs;

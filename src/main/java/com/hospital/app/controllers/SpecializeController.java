@@ -2,12 +2,10 @@ package com.hospital.app.controllers;
 
 import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
-import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.specialize.SpecializeCreateUpdateRequest;
 import com.hospital.app.dto.specialize.SpecializeResponse;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.Specialize;
-import com.hospital.app.mappers.SpecializeMapper;
 import com.hospital.app.services.SpecializeService;
 import com.hospital.app.utils.ResponseLayout;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,7 @@ public class SpecializeController {
     private SpecializeService specializeService;
 
     @GetMapping("/all")
-    @WithRateLimitIPAddress(limit = 1,duration = 3000)
+    @WithRateLimitIPAddress(limit = 5,duration = 15000)
     public ResponseEntity<ResponseLayout<List<SpecializeResponse>>> getAllSpecializes() {
         return ResponseEntity.ok(ResponseLayout
                 .<List<SpecializeResponse>>builder()
@@ -34,7 +32,7 @@ public class SpecializeController {
     }
 
     @GetMapping("/{id}")
-    @WithRateLimitRequest(limit = 100)
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<SpecializeResponse>> getSpecializeById(@PathVariable("id") Long id) {
         SpecializeResponse specialize = this.specializeService.getById(id);
         return ResponseEntity.ok(ResponseLayout
@@ -70,6 +68,7 @@ public class SpecializeController {
 
     @HasRole(roles = {Role.ADMIN})
     @DeleteMapping("/{id}")
+    @WithRateLimitIPAddress(duration = 10000,limit = 5)
     public ResponseEntity<ResponseLayout<Object>> deleteSpecialize(@PathVariable("id") Long id) {
         this.specializeService.delete(id);
         return ResponseEntity.ok(ResponseLayout.builder()

@@ -5,6 +5,7 @@ import com.hospital.app.entities.account.Accountant;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.User;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.mappers.AccountMapper;
 import com.hospital.app.repositories.AccountantRepository;
 import com.hospital.app.services.AccountantService;
 import com.hospital.app.services.UserService;
@@ -45,11 +46,7 @@ public class AccountantServiceImpl implements AccountantService {
         }
         user.setRole(Role.ACCOUNTANT);
         this.entityManager.merge(user);
-        return this.accountantRepository.save(Accountant.builder()
-                .user(user)
-                .email(requestDto.email())
-                .phoneNumber(requestDto.phoneNumber())
-                .build());
+        return this.accountantRepository.save(AccountMapper.toAccountant(requestDto, user));
     }
 
 }

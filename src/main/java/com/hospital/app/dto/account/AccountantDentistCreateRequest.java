@@ -18,6 +18,7 @@ public record AccountantDentistCreateRequest(
         @NotEmpty
         @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$\n")
         String email,
-        Long specializeId
+        Long specializeId,
+        String description
 ) {
 }

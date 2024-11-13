@@ -31,7 +31,4 @@ public class Service extends EntityLayout {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "service")
     private List<InvoiceService> invoiceServices;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "service")
-    private List<Appointment> appointments;
 }

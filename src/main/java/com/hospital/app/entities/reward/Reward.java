@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.EntityLayout;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.util.List;
 
@@ -20,8 +21,10 @@ public class Reward extends EntityLayout {
     private String content;
     @Column(columnDefinition = "TEXT")
     private String poster;
+    @ColumnDefault("FALSE")
+    private Boolean isOpened;
     //Relationships
     @JsonIgnore
     @OneToMany(mappedBy = "reward",cascade = CascadeType.ALL)
-    private List<RewardRedemptionHistory> rewardRedemptionHistories;
+    private List<RewardHistory> rewardHistories;
 }

@@ -1,23 +1,32 @@
 package com.hospital.app.entities.work;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.EntityLayout;
 import com.hospital.app.entities.account.Dentist;
 import com.hospital.app.entities.account.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.Date;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @Entity
 @Table(name = "DentalRecords")
 @AllArgsConstructor
 @NoArgsConstructor
-public class DentalRecord extends EntityLayout {
+public class DentalRecord {
     //Attribute
+    @Id
+    private Long id;
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date createdAt;
+    @JsonIgnore
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date  deletedAt;
     @Temporal(TemporalType.DATE)
     private Date examinationDate;
     @Column(columnDefinition = "LONGTEXT")
@@ -27,10 +36,8 @@ public class DentalRecord extends EntityLayout {
     @Column(columnDefinition = "TEXT")
     private String notes;
     //Relationships
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "userId",referencedColumnName = "id",nullable = false)
-    private User user;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "dentistId",referencedColumnName = "id",nullable = false)
-    private Dentist dentist;
+    @MapsId
+    @OneToOne
+    @JoinColumn(name = "id",referencedColumnName = "id", nullable = false)
+    private Appointment appointment;
 }

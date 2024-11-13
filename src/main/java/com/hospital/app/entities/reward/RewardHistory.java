@@ -9,10 +9,10 @@ import lombok.*;
 @Data
 @Builder
 @Entity
-@Table(name = "RewardRedemptionHistories")
+@Table(name = "RewardHistories")
 @AllArgsConstructor
 @NoArgsConstructor
-public class RewardRedemptionHistory extends EntityLayout {
+public class RewardHistory extends EntityLayout {
     //Attributes
     private Long pointsUsed;
     @Column(columnDefinition = "TEXT")
@@ -23,6 +23,6 @@ public class RewardRedemptionHistory extends EntityLayout {
     @JoinColumn(name = "rewardPointId",referencedColumnName = "id",nullable = false)
     private RewardPoint rewardPoint;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rewardId",referencedColumnName = "id",nullable = false)
+    @JoinColumn(name = "rewardId",referencedColumnName = "id")
     private Reward reward;
 }

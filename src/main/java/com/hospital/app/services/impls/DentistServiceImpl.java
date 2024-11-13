@@ -6,6 +6,7 @@ import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.Specialize;
 import com.hospital.app.entities.account.User;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.mappers.AccountMapper;
 import com.hospital.app.repositories.DentistRepository;
 import com.hospital.app.services.DentistService;
 import com.hospital.app.services.SpecializeService;
@@ -57,11 +58,6 @@ public class DentistServiceImpl implements DentistService {
         }
         user.setRole(Role.DENTIST);
         this.entityManager.merge(user);
-        return this.dentistRepository.save(Dentist.builder()
-                .user(user)
-                .phoneNumber(requestDto.phoneNumber())
-                .email(requestDto.email())
-                .specialize(specialize)
-                .build());
+        return this.dentistRepository.save(AccountMapper.toDentist(requestDto, user, specialize));
     }
 }
