@@ -4,6 +4,7 @@ import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
 import com.hospital.app.annotations.WithRateLimitRequest;
 import com.hospital.app.dto.specialize.SpecializeCreateUpdateRequest;
+import com.hospital.app.dto.specialize.SpecializeResponse;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.account.Specialize;
 import com.hospital.app.mappers.SpecializeMapper;
@@ -23,9 +24,9 @@ public class SpecializeController {
 
     @GetMapping("/all")
     @WithRateLimitIPAddress(limit = 1,duration = 3000)
-    public ResponseEntity<ResponseLayout<List<SpecializeMapper>>> getAllSpecializes() {
+    public ResponseEntity<ResponseLayout<List<SpecializeResponse>>> getAllSpecializes() {
         return ResponseEntity.ok(ResponseLayout
-                .<List<SpecializeMapper>>builder()
+                .<List<SpecializeResponse>>builder()
                 .data(this.specializeService.getAll())
                 .success(true)
                 .message("Lấy tất cả chuyên nghành thành công")
@@ -34,10 +35,10 @@ public class SpecializeController {
 
     @GetMapping("/{id}")
     @WithRateLimitRequest(limit = 100)
-    public ResponseEntity<ResponseLayout<SpecializeMapper>> getSpecializeById(@PathVariable("id") Long id) {
-        SpecializeMapper specialize = this.specializeService.getById(id);
+    public ResponseEntity<ResponseLayout<SpecializeResponse>> getSpecializeById(@PathVariable("id") Long id) {
+        SpecializeResponse specialize = this.specializeService.getById(id);
         return ResponseEntity.ok(ResponseLayout
-                .<SpecializeMapper>builder()
+                .<SpecializeResponse>builder()
                 .message(specialize != null ? "Lấy thông tin thành công" : "Không tìm thấy chuyên nghành")
                 .success(specialize != null)
                 .data(specialize)

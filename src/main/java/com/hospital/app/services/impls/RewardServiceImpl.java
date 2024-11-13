@@ -3,6 +3,7 @@ package com.hospital.app.services.impls;
 import com.hospital.app.dto.reward.RewardCreateRequest;
 import com.hospital.app.entities.reward.Reward;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.mappers.RewardMapper;
 import com.hospital.app.repositories.RewardRepository;
 import com.hospital.app.services.RewardService;
 import com.hospital.app.utils.VietNamTime;
@@ -42,10 +43,8 @@ public class RewardServiceImpl implements RewardService {
                     .message("Điểm tích lũy phải lớn hơn 0")
                     .build();
         }
-        return this.rewardRepository.save(Reward.builder()
-                .content(rewardCreateRequest.content())
-                .points(rewardCreateRequest.points())
-                .build());
+        return this.rewardRepository.save(RewardMapper.
+                toRewardFromRewardCreateRequest(rewardCreateRequest));
     }
 
     @Override

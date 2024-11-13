@@ -7,29 +7,22 @@ public class LoginFutureFactoryImpl implements LoginFutureFactory {
     private static EmailPasswordLoginFutureStrategy emailPasswordLoginFutureStrategy;
     private static UsernamePasswordLoginFutureStrategy usernamePasswordLoginFutureStrategy;
     private static PhoneNumberPasswordLoginFutureStrategy phoneNumberPasswordLoginFutureStrategy;
-
-    private static LoginFutureFactoryImpl loginFutureFactory;
-
-    private LoginFutureFactoryImpl() {
-    }
-
+    private static LoginFutureFactoryImpl instance;
+    private LoginFutureFactoryImpl() {}
     public static LoginFutureFactoryImpl getInstance() {
-        if (loginFutureFactory == null) loginFutureFactory = new LoginFutureFactoryImpl();
-        return loginFutureFactory;
+        if (instance == null) instance = new LoginFutureFactoryImpl();
+        return instance;
     }
-
     private enum LoginType {
         USERNAME_PASSWORD,
         PHONE_NUMBER_PASSWORD,
         EMAIL_PASSWORD
     }
-
     private LoginType getType(String value) {
         if (RegexUtil.isEmail(value)) return LoginType.EMAIL_PASSWORD;
         else if (RegexUtil.PhoneNumber(value)) return LoginType.PHONE_NUMBER_PASSWORD;
         return LoginType.USERNAME_PASSWORD;
     }
-
     @Override
     public LoginFuture get(LoginRequest loginRequest) {
         LoginType type = getType(loginRequest.username());

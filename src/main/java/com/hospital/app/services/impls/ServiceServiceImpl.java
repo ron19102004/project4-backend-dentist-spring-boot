@@ -3,6 +3,7 @@ package com.hospital.app.services.impls;
 import com.hospital.app.dto.service.ServiceCreateRequest;
 import com.hospital.app.entities.service.Service;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.mappers.ServiceMapper;
 import com.hospital.app.repositories.ServiceRepository;
 import com.hospital.app.services.ServiceService;
 import com.hospital.app.utils.Slugify;
@@ -24,18 +25,14 @@ public class ServiceServiceImpl implements ServiceService {
 
     @Override
     public Service create(final ServiceCreateRequest serviceCreateRequest) {
-        return this.serviceRepository.save(Service.builder()
-                .name(serviceCreateRequest.name())
-                .slug(Slugify.toSlug(serviceCreateRequest.name()))
-                .description(serviceCreateRequest.description())
-                .price(serviceCreateRequest.price())
-                .build());
+        return this.serviceRepository.save(ServiceMapper.toService(serviceCreateRequest));
     }
 
     @Override
-    public void update(final Long id,final  Object o) {
+    public void update(final Long id, final Object o) {
 
     }
+
     @Transactional
     @Override
     public void delete(final Long id) {

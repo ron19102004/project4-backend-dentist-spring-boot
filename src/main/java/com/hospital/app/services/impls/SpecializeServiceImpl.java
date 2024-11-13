@@ -1,6 +1,7 @@
 package com.hospital.app.services.impls;
 
 import com.hospital.app.dto.specialize.SpecializeCreateUpdateRequest;
+import com.hospital.app.dto.specialize.SpecializeResponse;
 import com.hospital.app.entities.account.Specialize;
 import com.hospital.app.exception.ServiceException;
 import com.hospital.app.mappers.SpecializeMapper;
@@ -29,11 +30,11 @@ public class SpecializeServiceImpl implements SpecializeService {
     private EntityManager entityManager;
 
     @Override
-    public List<SpecializeMapper> getAll() {
+    public List<SpecializeResponse> getAll() {
         List<Specialize> specializes = this.specializeRepository.findAllByDeletedAtIsNull();
         return specializes.stream().map(specialize -> {
             try {
-                return SpecializeMapper.mapper(specialize);
+                return SpecializeMapper.toSpecializeResponse(specialize, false);
             } catch (IOException e) {
                 throw ServiceException.builder()
                         .clazz(SpecializeServiceImpl.class)
@@ -45,9 +46,9 @@ public class SpecializeServiceImpl implements SpecializeService {
     }
 
     @Override
-    public SpecializeMapper getById(final Long id) {
+    public SpecializeResponse getById(final Long id) {
         try {
-            return SpecializeMapper.mapper(this.getByIdNormal(id));
+            return SpecializeMapper.toSpecializeResponse(this.getByIdNormal(id), true);
         } catch (IOException e) {
             throw ServiceException.builder()
                     .clazz(SpecializeServiceImpl.class)
@@ -65,11 +66,7 @@ public class SpecializeServiceImpl implements SpecializeService {
     @Override
     public Specialize create(final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
         try {
-            return this.specializeRepository.save(Specialize.builder()
-                    .name(specializeCreateUpdateRequest.name())
-                    .slug(Slugify.toSlug(specializeCreateUpdateRequest.name()))
-                    .description(HtmlZipUtil.compress(specializeCreateUpdateRequest.description()))
-                    .build());
+            return this.specializeRepository.save(SpecializeMapper.toSpecialize(specializeCreateUpdateRequest));
         } catch (IOException e) {
             throw ServiceException.builder()
                     .clazz(SpecializeServiceImpl.class)
@@ -91,9 +88,10 @@ public class SpecializeServiceImpl implements SpecializeService {
                         .message("Chuyên ngành không xác định")
                         .build();
             }
-            specialize.setName(specializeCreateUpdateRequest.name());
-            specialize.setSlug(Slugify.toSlug(specializeCreateUpdateRequest.name()));
-            specialize.setDescription(HtmlZipUtil.compress(specializeCreateUpdateRequest.description()));
+            Specialize specializeMapper = SpecializeMapper.toSpecialize(specializeCreateUpdateRequest);
+            specialize.setName(specializeMapper.getName());
+            specialize.setSlug(specializeMapper.getSlug());
+            specialize.setDescription(specializeMapper.getDescription());
             this.entityManager.merge(specialize);
         } catch (IOException e) {
             throw ServiceException.builder()
