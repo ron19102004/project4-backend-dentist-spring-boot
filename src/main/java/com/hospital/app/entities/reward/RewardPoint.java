@@ -24,7 +24,9 @@ public class RewardPoint {
     @Id
     @JsonIgnore
     private Long id;
+    @Column(nullable = false)
     private Long point;
+    @Column(nullable = false)
     private Long pointsUsed;
     @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp

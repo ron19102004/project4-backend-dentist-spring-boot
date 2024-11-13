@@ -17,13 +17,19 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class InvoiceService extends EntityLayout {
     //Attributes
+    @Column(nullable = false)
     private BigDecimal priceServiceCurrent;
+    @Column(nullable = false)
+    private String nameServiceCurrent;
+    @Column(nullable = false)
+    private Long pointRewardCurrent;
     //Relationships
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id",name = "invoiceId",nullable = false)
     private Invoice invoice;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id",name = "serviceId",nullable = false)
     private Service service;
 }

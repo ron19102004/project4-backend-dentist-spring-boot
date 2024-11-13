@@ -5,6 +5,7 @@ import com.hospital.app.entities.EntityLayout;
 import com.hospital.app.entities.account.Accountant;
 import com.hospital.app.entities.account.User;
 import com.hospital.app.entities.payment.Payment;
+import com.hospital.app.entities.reward.RewardHistory;
 import com.hospital.app.entities.work.Appointment;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,18 +33,24 @@ public class Invoice {
     private Date  deletedAt;
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status;
-    private Long rewardHistoryId;
     private BigDecimal amountOriginPaid;
     //Relationships
     @MapsId
     @OneToOne
+    @JsonIgnore
     @JoinColumn(name = "id",referencedColumnName = "id", nullable = false)
     private Appointment appointment;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "accountantId", referencedColumnName = "id")
+    @JsonIgnore
     private Accountant accountant;
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL,mappedBy = "invoice")
     private Payment payment;
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "invoice")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "invoice",fetch = FetchType.EAGER)
     private List<InvoiceService> invoiceServices;
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "rewardHistoryId",referencedColumnName = "id",unique = true)
+    private RewardHistory rewardHistory;
 }

@@ -13,6 +13,7 @@ public class ServiceMapper {
                 .slug(Slugify.toSlug(serviceCreateRequest.name()))
                 .description(serviceCreateRequest.description())
                 .price(serviceCreateRequest.price())
+                .pointReward(serviceCreateRequest.pointReward())
                 .build();
     }
 }

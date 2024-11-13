@@ -2,10 +2,9 @@ package com.hospital.app.entities.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.EntityLayout;
-import com.hospital.app.entities.invoice.Invoice;
 import com.hospital.app.entities.reward.RewardPoint;
 import com.hospital.app.entities.work.Appointment;
-import com.hospital.app.entities.work.DentalRecord;
+
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -27,20 +26,25 @@ import java.util.List;
 @NoArgsConstructor
 public class User extends EntityLayout implements UserDetails {
     //Attributes
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String username;
+    @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
     private String fullName;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String phoneNumber;
+    @Column(nullable = false)
     private String address;
     @Column(unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private Role role;
     @Column(columnDefinition = "LONGTEXT")
+    @JsonIgnore
     private String tokenResetPassword;
     @ColumnDefault("FALSE")
     private boolean isActiveTwoFactorAuthentication;

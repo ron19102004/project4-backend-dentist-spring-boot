@@ -1,5 +1,6 @@
 package com.hospital.app.entities.payment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hospital.app.entities.invoice.Invoice;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,16 +23,17 @@ public class Payment {
     //Attributes
     @Id
     private Long id;
-    @Temporal(TemporalType.DATE)
-    private Date paymentDate;
-    private BigDecimal amountPaid;
-    private PaymentStatus status;
     @Temporal(TemporalType.TIMESTAMP)
-    @CreationTimestamp
-    private Date createdAt;
+    private Date paymentDate;
+    @Column(nullable = false)
+    private BigDecimal amountPaid;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentType paymentType;
     //Relationships
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(referencedColumnName = "id", name = "id", nullable = false)
     private Invoice invoice;
 

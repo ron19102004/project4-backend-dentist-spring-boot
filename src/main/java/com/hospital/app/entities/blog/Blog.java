@@ -17,9 +17,11 @@ public class Blog extends EntityLayout {
     //Attributes
     @Column(columnDefinition = "TEXT")
     private String poster;
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String content;
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false,unique = true)
     private String slug;
     @ColumnDefault("FALSE")
     private Boolean isConfirmed;

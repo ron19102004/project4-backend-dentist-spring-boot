@@ -1,14 +1,15 @@
-package com.hospital.app.dto.user_appointment;
+package com.hospital.app.dto.appointment;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 public record BookingAppointmentRequest(
         @NotNull
-        Date appointmentDate,
+        LocalDate appointmentDate,
         @NotNull
         String appointmentNote,
         @NotEmpty

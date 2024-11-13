@@ -13,6 +13,8 @@ public record ServiceCreateRequest(
         BigDecimal price,
         @NotNull
         @NotEmpty
-        String description
+        String description,
+        @NotNull
+        Long pointReward
 ) {
 }

@@ -32,30 +32,12 @@ public class SpecializeServiceImpl implements SpecializeService {
     @Override
     public List<SpecializeResponse> getAll() {
         List<Specialize> specializes = this.specializeRepository.findAllByDeletedAtIsNull();
-        return specializes.stream().map(specialize -> {
-            try {
-                return SpecializeMapper.toSpecializeResponse(specialize, false);
-            } catch (IOException e) {
-                throw ServiceException.builder()
-                        .clazz(SpecializeServiceImpl.class)
-                        .message(e.getMessage())
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
-        }).toList();
+        return specializes.stream().map(SpecializeMapper::toSpecializeResponse).toList();
     }
 
     @Override
     public SpecializeResponse getById(final Long id) {
-        try {
-            return SpecializeMapper.toSpecializeResponse(this.getByIdNormal(id), true);
-        } catch (IOException e) {
-            throw ServiceException.builder()
-                    .clazz(SpecializeServiceImpl.class)
-                    .message(e.getMessage())
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        }
+        return SpecializeMapper.toSpecializeResponse(this.getByIdNormal(id));
     }
 
     @Override
@@ -65,41 +47,25 @@ public class SpecializeServiceImpl implements SpecializeService {
 
     @Override
     public Specialize create(final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
-        try {
-            return this.specializeRepository.save(SpecializeMapper.toSpecialize(specializeCreateUpdateRequest));
-        } catch (IOException e) {
-            throw ServiceException.builder()
-                    .clazz(SpecializeServiceImpl.class)
-                    .message(e.getMessage())
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        }
+        return this.specializeRepository.save(SpecializeMapper.toSpecialize(specializeCreateUpdateRequest));
     }
 
     @Transactional
     @Override
     public void update(final Long id, final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
-        try {
-            Specialize specialize = this.getByIdNormal(id);
-            if (specialize == null) {
-                throw ServiceException.builder()
-                        .clazz(SpecializeServiceImpl.class)
-                        .status(HttpStatus.NOT_FOUND)
-                        .message("Chuyên ngành không xác định")
-                        .build();
-            }
-            Specialize specializeMapper = SpecializeMapper.toSpecialize(specializeCreateUpdateRequest);
-            specialize.setName(specializeMapper.getName());
-            specialize.setSlug(specializeMapper.getSlug());
-            specialize.setDescription(specializeMapper.getDescription());
-            this.entityManager.merge(specialize);
-        } catch (IOException e) {
+        Specialize specialize = this.getByIdNormal(id);
+        if (specialize == null) {
             throw ServiceException.builder()
                     .clazz(SpecializeServiceImpl.class)
-                    .message(e.getMessage())
-                    .status(HttpStatus.BAD_REQUEST)
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("Chuyên ngành không xác định")
                     .build();
         }
+        Specialize specializeMapper = SpecializeMapper.toSpecialize(specializeCreateUpdateRequest);
+        specialize.setName(specializeMapper.getName());
+        specialize.setSlug(specializeMapper.getSlug());
+        specialize.setDescription(specializeMapper.getDescription());
+        this.entityManager.merge(specialize);
     }
 
     @Transactional

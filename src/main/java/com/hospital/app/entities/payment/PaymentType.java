@@ -1,6 +1,6 @@
 package com.hospital.app.entities.payment;
 
-public enum PaymentStatus {
+public enum PaymentType {
     CASH,
     CREDIT_CARD,
     BANK_TRANSFER,

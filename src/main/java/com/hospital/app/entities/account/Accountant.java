@@ -20,13 +20,16 @@ public class Accountant {
     //Attributes
     @Id
     private Long id;
+    @Column(unique = true,nullable = false)
     private String email;
+    @Column(unique = true,nullable = false)
     private String phoneNumber;
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
     //Relationships
     @MapsId
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id", referencedColumnName = "id", nullable = false)
     private User user;

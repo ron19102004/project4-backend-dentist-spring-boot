@@ -17,7 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 public class Reward extends EntityLayout {
     //Attributes
+    @Column(nullable = false)
     private Long points;
+    @Column(nullable = false)
     private String content;
     @Column(columnDefinition = "TEXT")
     private String poster;

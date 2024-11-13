@@ -2,6 +2,7 @@ package com.hospital.app.controllers;
 
 import com.hospital.app.annotations.HasRole;
 import com.hospital.app.annotations.WithRateLimitIPAddress;
+import com.hospital.app.dto.service.HotServiceResponse;
 import com.hospital.app.dto.service.ServiceCreateRequest;
 import com.hospital.app.entities.account.Role;
 import com.hospital.app.entities.service.Service;
@@ -19,10 +20,19 @@ public class ServiceController {
     @Autowired
     private ServiceService serviceService;
 
+    @GetMapping("/hot")
+    @WithRateLimitIPAddress(duration = 15000,limit = 5)
+    public ResponseEntity<ResponseLayout<List<HotServiceResponse>>> getHotServices() {
+        return ResponseEntity.ok(ResponseLayout
+                .<List<HotServiceResponse>>builder()
+                .data(this.serviceService.hotServices())
+                .success(true)
+                .message("Lấy thông tin dịch vụ thành công")
+                .build());
+    }
     @GetMapping("/all")
     @WithRateLimitIPAddress(duration = 15000,limit = 5)
     public ResponseEntity<ResponseLayout<List<Service>>> getAllServices() {
-        System.out.println(serviceService);
         return ResponseEntity.ok(ResponseLayout
                 .<List<Service>>builder()
                 .data(this.serviceService.getAll())

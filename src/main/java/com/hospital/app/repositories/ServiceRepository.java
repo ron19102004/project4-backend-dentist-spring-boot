@@ -10,4 +10,5 @@ import java.util.List;
 public interface ServiceRepository extends JpaRepository<Service, Long> {
     List<Service> findAllByDeletedAtIsNull();
     Service findByIdAndDeletedAtIsNull(Long id);
+    List<Service> findAllByIdIn(List<Long> ids);
 }

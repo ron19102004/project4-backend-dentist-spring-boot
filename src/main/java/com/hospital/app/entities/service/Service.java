@@ -23,10 +23,14 @@ public class Service extends EntityLayout {
     private String description;
     @Column(columnDefinition = "TEXT")
     private String poster;
+    @Column(nullable = false)
     private String name;
     @Column(nullable = false,unique = true)
     private String slug;
+    @Column(nullable = false)
     private BigDecimal price;
+    @Column(nullable = false)
+    private Long pointReward;
     //Relationships
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "service")

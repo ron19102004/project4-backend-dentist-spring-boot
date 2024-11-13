@@ -7,6 +7,7 @@ import com.hospital.app.entities.account.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 import java.util.Date;
@@ -24,20 +25,24 @@ public class DentalRecord {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private Date updatedAt;
     @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date  deletedAt;
     @Temporal(TemporalType.DATE)
     private Date examinationDate;
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String diagnosis;
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
     private String treatment;
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT",nullable = false)
     private String notes;
     //Relationships
+    @JsonIgnore
     @MapsId
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id",referencedColumnName = "id", nullable = false)
     private Appointment appointment;
 }
