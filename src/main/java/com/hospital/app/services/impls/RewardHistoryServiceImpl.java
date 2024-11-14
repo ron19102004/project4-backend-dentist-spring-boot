@@ -6,6 +6,7 @@ import com.hospital.app.entities.reward.Reward;
 import com.hospital.app.entities.reward.RewardHistory;
 import com.hospital.app.entities.reward.RewardPoint;
 import com.hospital.app.exception.ServiceException;
+import com.hospital.app.mappers.RewardHistoryMapper;
 import com.hospital.app.repositories.RewardHistoryRepository;
 import com.hospital.app.repositories.RewardPointRepository;
 import com.hospital.app.repositories.RewardRepository;
@@ -62,7 +63,7 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
         myRewardPoint.setLastUpdatedAt(VietNamTime.dateNow());
         entityManager.merge(myRewardPoint);
         RewardHistory rewardHistory = RewardHistory.builder()
-                .notes(message)
+                .content(message)
                 .pointsUsed(point)
                 .rewardPoint(myRewardPoint)
                 .build();
@@ -103,7 +104,7 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
         entityManager.merge(myRewardPoint);
 
         RewardHistory rewardHistory = RewardHistory.builder()
-                .notes(message)
+                .content(message)
                 .pointsUsed(-reward.getPoints())
                 .reward(reward)
                 .rewardPoint(myRewardPoint)
@@ -122,6 +123,12 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
                     .build();
         }
         myRewardPoint.getRewardHistories().sort(Comparator.comparing(RewardHistory::getId).reversed());
-        return new MyRewardHistoriesResponse(myRewardPoint, myRewardPoint.getRewardHistories());
+        return new MyRewardHistoriesResponse(
+                myRewardPoint,
+                myRewardPoint
+                        .getRewardHistories()
+                        .stream()
+                        .map(RewardHistoryMapper::toRewardHistoryResponse)
+                        .toList());
     }
 }

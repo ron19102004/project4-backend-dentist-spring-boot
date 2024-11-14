@@ -9,7 +9,7 @@ info:
   hotline: 0392477615
   dentistEmail: dungtna.22itb@vku.udn.vn
 server:
-  port: 8080
+  port: 80
 mailer:
   host: smtp.gmail.com
   port: 587
@@ -21,7 +21,7 @@ mailer:
         auth: true
         starttls:
           enable: true
-      debug: false
+      debug: true
 spring:
   application:
     name: Hospital-BE

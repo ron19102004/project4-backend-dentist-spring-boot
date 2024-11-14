@@ -87,7 +87,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @WithRateLimitIPAddress(limit = 1, duration = 3000)
+    @WithRateLimitIPAddress(limit = 1, duration = 15000)
     public ResponseEntity<ResponseLayout<TokenResponse>> login(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestBody LoginRequest loginRequest) {
@@ -106,7 +106,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    @WithRateLimitIPAddress(limit = 1, duration = 3000)
+    @WithRateLimitIPAddress(limit = 1, duration = 15000)
     public ResponseEntity<ResponseLayout<TokenResponse>> verifyOTP(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestParam("otp") String otp,
@@ -120,7 +120,7 @@ public class AuthController {
 
     @PostMapping("/change-tfa")
     @HasRole(justCheckAuthentication = true)
-    @WithRateLimitIPAddress(limit = 1)
+    @WithRateLimitIPAddress(limit = 10)
     public ResponseEntity<ResponseLayout<TokenResponse>> changeTFA(@AuthenticationPrincipal User user) {
         this.authService.changeTFAStatus(user);
         return ResponseEntity.ok(ResponseLayout.<TokenResponse>builder()

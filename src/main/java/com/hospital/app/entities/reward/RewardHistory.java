@@ -17,8 +17,8 @@ public class RewardHistory extends EntityLayout {
     //Attributes
     @Column(nullable = false)
     private Long pointsUsed;
-    @Column(columnDefinition = "TEXT",nullable = false)
-    private String notes;
+    @Column(columnDefinition = "LONGTEXT",nullable = false)
+    private String content;
     //Relationships
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)

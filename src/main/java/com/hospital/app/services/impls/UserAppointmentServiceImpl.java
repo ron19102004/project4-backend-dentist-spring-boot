@@ -8,6 +8,7 @@ import com.hospital.app.entities.invoice.Invoice;
 import com.hospital.app.entities.invoice.InvoiceService;
 import com.hospital.app.entities.payment.Payment;
 import com.hospital.app.entities.payment.PaymentType;
+import com.hospital.app.entities.reward.RewardHistory;
 import com.hospital.app.entities.work.Appointment;
 import com.hospital.app.entities.work.AppointmentStatus;
 import com.hospital.app.exception.ServiceException;
@@ -15,17 +16,18 @@ import com.hospital.app.mappers.AppointmentMapper;
 import com.hospital.app.mappers.UserAppointmentMapper;
 import com.hospital.app.repositories.*;
 import com.hospital.app.services.UserAppointmentService;
+import com.hospital.app.utils.ResponseLayout;
 import com.hospital.app.utils.VietNamTime;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +46,10 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     private InvoiceServiceRepository invoiceServiceRepository;
     @Autowired
     private PaymentRepository paymentRepository;
+    @Autowired
+    private RewardHistoryRepository rewardHistoryRepository;
+    @PersistenceContext
+    private EntityManager entityManager;
     private final static long MAX_APPOINTMENT_IN_DAY = 50;
 
     @Override
@@ -153,5 +159,56 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
         return AppointmentMapper
                 .toAppointmentDTO(appointmentRepository
                         .findByIdAndUserId(appointmentId, userId));
+    }
+
+    @Transactional
+    @Override
+    public void addReward(Long userId, Long appointmentId, Long rewardHistoryId) {
+        RewardHistory rewardHistory = rewardHistoryRepository.findById(rewardHistoryId).orElse(null);
+        if (rewardHistory == null) {
+            throw ServiceException.builder()
+                    .message("Không tìm thấy lịch sử đổi điểm với các mã: " + rewardHistoryId)
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        if (!Objects.equals(rewardHistory.getReward().getId(), userId)){
+            throw ServiceException.builder()
+                    .message("Mã đổi thưởng không hợp lệ")
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+        if (rewardHistory.getInvoice() != null){
+            throw ServiceException.builder()
+                    .message("Mã đổi thưởng đã được sử dụng")
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        Invoice invoice = invoiceRepository.findById(appointmentId).orElse(null);
+        if (invoice == null) {
+            throw ServiceException.builder()
+                    .message("Không tìm thấy hóa đơn với các mã: " + appointmentId)
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+        if (!Objects.equals(invoice.getAppointment().getUser().getId(), userId)){
+            throw ServiceException.builder()
+                    .message("Hóa đơn không hợp lệ")
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.FORBIDDEN)
+                    .build();
+        }
+        if (invoice.getRewardHistory() != null){
+            throw ServiceException.builder()
+                    .message("Hóa đơn đã được áp dụng mã đổi điểm khác")
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+        invoice.setRewardHistory(rewardHistory);
+        entityManager.merge(invoice);
     }
 }

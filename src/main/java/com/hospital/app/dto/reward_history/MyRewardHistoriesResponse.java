@@ -7,6 +7,6 @@ import java.util.List;
 
 public record MyRewardHistoriesResponse(
         RewardPoint rewardPoint,
-        List<RewardHistory> rewardHistories
+        List<RewardHistoryResponse> rewardHistories
 ) {
 }

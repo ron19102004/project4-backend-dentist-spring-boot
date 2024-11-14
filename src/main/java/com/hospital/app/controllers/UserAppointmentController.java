@@ -36,11 +36,27 @@ public class UserAppointmentController {
     @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 10, duration = 30000)
     public ResponseEntity<ResponseLayout<AppointmentDTO>> getDetails(@AuthenticationPrincipal User user,
-                                                                      @PathVariable("appointmentId") Long appointmentId) {
+                                                                     @PathVariable("appointmentId") Long appointmentId) {
         return ResponseEntity.ok(ResponseLayout.<AppointmentDTO>builder()
                 .message("Lấy thông tin thành công")
                 .success(true)
                 .data(userAppointmentService.getDetailsUserAppointment(user.getId(), appointmentId))
+                .build());
+    }
+
+    @PostMapping("/invoice/add-reward/{appointmentId}/{rewardHistoryId}")
+    @HasRole(justCheckAuthentication = true)
+    @WithRateLimitIPAddress(limit = 5)
+    @WithRateLimitRequest(duration = 3000)
+    public ResponseEntity<ResponseLayout<Object>> addReward(
+            @AuthenticationPrincipal User user,
+            @PathVariable("appointmentId") Long appointmentId,
+            @PathVariable("rewardHistoryId") Long rewardHistoryId
+    ) {
+        userAppointmentService.addReward(user.getId(), appointmentId, rewardHistoryId);
+        return ResponseEntity.ok(ResponseLayout.<Object>builder()
+                .message("Thêm mã đổi quà thành công")
+                .success(true)
                 .build());
     }
 }

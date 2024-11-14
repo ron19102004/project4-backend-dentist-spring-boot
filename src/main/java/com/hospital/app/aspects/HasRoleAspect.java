@@ -25,14 +25,14 @@ public class HasRoleAspect {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!authentication.isAuthenticated() || isAnonymousUser(authentication.getPrincipal())) {
             throw AuthenticationException.builder()
-                    .message("Xác thực không thành công")
+                    .message("Xác thực người dùng không thành công")
                     .build();
         }
         if (hasRole.justCheckAuthentication()) return;
         User user = (User) authentication.getPrincipal();
         if (!Arrays.asList(hasRole.roles()).contains(user.getRole())) {
             throw AuthorizationDeniedCustomException.builder()
-                    .message("Không có quyền truy cập")
+                    .message("Người dùng không có quyền truy cập")
                     .build();
         }
     }
