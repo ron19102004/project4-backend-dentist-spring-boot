@@ -13,10 +13,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtToUserConverter implements
         Converter<Jwt, UsernamePasswordAuthenticationToken> {
+    private final TokenService tokenService;
+    private final UserService userService;
     @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private UserService userService;
+    public JwtToUserConverter(TokenService tokenService, UserService userService) {
+        this.tokenService = tokenService;
+        this.userService = userService;
+    }
 
     @Override
     public UsernamePasswordAuthenticationToken convert(Jwt jwt) throws ServiceException {

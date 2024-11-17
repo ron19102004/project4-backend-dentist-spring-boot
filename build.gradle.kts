@@ -44,6 +44,8 @@ dependencies {
 	implementation("org.springframework.security:spring-security-oauth2-jose")
 
 	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.5")
+
 
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("com.mysql:mysql-connector-j")

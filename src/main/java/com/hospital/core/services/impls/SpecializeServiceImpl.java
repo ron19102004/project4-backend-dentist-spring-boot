@@ -3,6 +3,7 @@ package com.hospital.core.services.impls;
 import com.hospital.core.dto.specialize.SpecializeCreateUpdateRequest;
 import com.hospital.core.dto.specialize.SpecializeResponse;
 import com.hospital.core.entities.account.Specialize;
+import com.hospital.core.events.UpdateListSpecializeEvent;
 import com.hospital.exception.ServiceException;
 import com.hospital.core.mappers.SpecializeMapper;
 import com.hospital.core.repositories.SpecializeRepository;
@@ -12,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,10 +21,16 @@ import java.util.List;
 
 @Service
 public class SpecializeServiceImpl implements SpecializeService {
-    @Autowired
-    private SpecializeRepository specializeRepository;
+    private final SpecializeRepository specializeRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    private final ApplicationEventPublisher eventPublisher;
+    @Autowired
+    public SpecializeServiceImpl(SpecializeRepository specializeRepository,
+                                 ApplicationEventPublisher eventPublisher) {
+        this.specializeRepository = specializeRepository;
+        this.eventPublisher = eventPublisher;
+    }
 
     @Override
     public List<SpecializeResponse> getAll() {
@@ -42,7 +50,10 @@ public class SpecializeServiceImpl implements SpecializeService {
 
     @Override
     public Specialize create(final SpecializeCreateUpdateRequest specializeCreateUpdateRequest) {
-        return this.specializeRepository.save(SpecializeMapper.toSpecialize(specializeCreateUpdateRequest));
+        Specialize specialize = this.specializeRepository.save(SpecializeMapper.toSpecialize(specializeCreateUpdateRequest));
+        List<SpecializeResponse> specializeResponses = getAll();
+        eventPublisher.publishEvent(new UpdateListSpecializeEvent(this,specializeResponses));
+        return specialize ;
     }
 
     @Transactional
@@ -61,6 +72,8 @@ public class SpecializeServiceImpl implements SpecializeService {
         specialize.setSlug(specializeMapper.getSlug());
         specialize.setDescription(specializeMapper.getDescription());
         this.entityManager.merge(specialize);
+        List<SpecializeResponse> specializeResponses = getAll();
+        eventPublisher.publishEvent(new UpdateListSpecializeEvent(this,specializeResponses));
     }
 
     @Transactional
@@ -76,5 +89,7 @@ public class SpecializeServiceImpl implements SpecializeService {
         }
         specialize.setDeletedAt(VietNamTime.dateNow());
         this.entityManager.merge(specialize);
+        List<SpecializeResponse> specializeResponses = getAll();
+        eventPublisher.publishEvent(new UpdateListSpecializeEvent(this,specializeResponses));
     }
 }

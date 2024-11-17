@@ -24,18 +24,22 @@ import java.util.Comparator;
 
 @Service
 public class RewardHistoryServiceImpl implements RewardHistoryService {
-    @Autowired
-    private RewardHistoryRepository rewardHistoryRepository;
-    @Autowired
+    private final RewardHistoryRepository rewardHistoryRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    private final RewardPointRepository rewardPointRepository;
+    private final UserRepository userRepository;
+    private final RewardRepository rewardRepository;
     @Autowired
-    private RewardPointRepository rewardPointRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RewardRepository rewardRepository;
-
+    public RewardHistoryServiceImpl(RewardHistoryRepository rewardHistoryRepository,
+                                    RewardPointRepository rewardPointRepository,
+                                    UserRepository userRepository,
+                                    RewardRepository rewardRepository) {
+        this.rewardHistoryRepository = rewardHistoryRepository;
+        this.rewardPointRepository = rewardPointRepository;
+        this.userRepository = userRepository;
+        this.rewardRepository = rewardRepository;
+    }
 
     @Transactional
     @Override

@@ -18,12 +18,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountantServiceImpl implements AccountantService {
-    @Autowired
-    private AccountantRepository accountantRepository;
+    private final AccountantRepository accountantRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    private final UserService userService;
     @Autowired
-    private UserService userService;
+    public AccountantServiceImpl(AccountantRepository accountantRepository, UserService userService) {
+        this.accountantRepository = accountantRepository;
+        this.userService = userService;
+    }
 
     @Transactional
     @Override

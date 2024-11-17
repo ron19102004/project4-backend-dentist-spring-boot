@@ -20,14 +20,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DentistServiceImpl implements DentistService {
-    @Autowired
-    private DentistRepository dentistRepository;
+    private final DentistRepository dentistRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    private final UserService userService;
+    private final SpecializeService specializeService;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private SpecializeService specializeService;
+    public DentistServiceImpl(DentistRepository dentistRepository, SpecializeService specializeService, UserService userService) {
+        this.dentistRepository = dentistRepository;
+        this.specializeService = specializeService;
+        this.userService = userService;
+    }
 
     @Transactional
     @Override

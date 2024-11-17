@@ -37,10 +37,13 @@ public class MailerServiceImpl extends AbsMailerTemplateRoute implements MailerS
     @Value("${mailInfoCustom.loginFrontEndPoint}")
     private String LOGIN_FRONT_END_POINT;
     private static final String ENCODING = "UTF-8";
+    private final TemplateEngine templateEngine;
+    private final JavaMailSender javaMailSender;
     @Autowired
-    private TemplateEngine templateEngine;
-    @Autowired
-    private JavaMailSender javaMailSender;
+    public MailerServiceImpl(TemplateEngine templateEngine, JavaMailSender javaMailSender) {
+        this.templateEngine = templateEngine;
+        this.javaMailSender = javaMailSender;
+    }
 
     @Async
     @Override

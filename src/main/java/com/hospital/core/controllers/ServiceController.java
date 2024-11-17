@@ -17,8 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/services/v1")
 public class ServiceController {
+    private final ServiceService serviceService;
     @Autowired
-    private ServiceService serviceService;
+    public ServiceController(ServiceService serviceService) {
+        this.serviceService = serviceService;
+    }
 
     @GetMapping("/hot")
     @WithRateLimitIPAddress(duration = 15000,limit = 5)

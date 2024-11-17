@@ -34,17 +34,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth/v1")
 public class AuthController {
+    private final JwtUtils jwtUtils;
+    private final DaoAuthenticationProvider authenticationProvider;
+    private final JwtAuthenticationProvider jwtRefreshTokenAuthProvider;
+    private final AuthService authService;
+    private final UserRepository userRepository;
+
     @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private DaoAuthenticationProvider authenticationProvider;
-    @Autowired
-    @Qualifier("jwtRefreshTokenAuthProvider")
-    private JwtAuthenticationProvider jwtRefreshTokenAuthProvider;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private UserRepository userRepository;
+    public AuthController(JwtUtils jwtUtils,
+                          DaoAuthenticationProvider authenticationProvider,
+                          @Qualifier("jwtRefreshTokenAuthProvider")
+                          JwtAuthenticationProvider jwtRefreshTokenAuthProvider,
+                          AuthService authService,
+                          UserRepository userRepository) {
+        this.jwtUtils = jwtUtils;
+        this.authenticationProvider = authenticationProvider;
+        this.jwtRefreshTokenAuthProvider = jwtRefreshTokenAuthProvider;
+        this.authService = authService;
+        this.userRepository = userRepository;
+    }
 
     @PostMapping("/reset-password")
     @WithRateLimitIPAddress(limit = 1, duration = 5 * 60000)

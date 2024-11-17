@@ -7,8 +7,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class BookingKafkaEventProducer {
+    private final KafkaTemplate<String, BookingKafkaEvent> bookingEventKafkaTemplate;
     @Autowired
-    private KafkaTemplate<String, BookingKafkaEvent> bookingEventKafkaTemplate;
+    public BookingKafkaEventProducer(KafkaTemplate<String, BookingKafkaEvent> bookingEventKafkaTemplate) {
+        this.bookingEventKafkaTemplate = bookingEventKafkaTemplate;
+    }
+
     public void pushBookingKafkaEvent(BookingKafkaEvent bookingEvent) {
         bookingEventKafkaTemplate.send("booking-event", bookingEvent);
     }

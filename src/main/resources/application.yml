@@ -22,6 +22,12 @@ mailer:
         starttls:
           enable: true
       debug: true
+redis:
+  host: localhost
+  port: 6379
+  keys:
+    reward-all: reward:all
+    specialize-all: specialize:all
 spring:
   kafka:
     bootstrap-servers: localhost:9092

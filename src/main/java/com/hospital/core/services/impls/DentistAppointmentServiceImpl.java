@@ -27,12 +27,15 @@ import java.util.List;
 
 @Service
 public class DentistAppointmentServiceImpl implements DentistAppointmentService {
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-    @Autowired
-    private DentalRecordRepository dentalRecordRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final DentalRecordRepository dentalRecordRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    @Autowired
+    public DentistAppointmentServiceImpl(AppointmentRepository appointmentRepository, DentalRecordRepository dentalRecordRepository) {
+        this.appointmentRepository = appointmentRepository;
+        this.dentalRecordRepository = dentalRecordRepository;
+    }
 
     @Override
     public List<QuantityAppointmentDentistDTO> countAppointmentDentistInSevenDaysLater(Long dentistId) {

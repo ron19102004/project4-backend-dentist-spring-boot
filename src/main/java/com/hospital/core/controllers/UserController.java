@@ -24,14 +24,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users/v1")
 public class UserController {
+    private final UserService userService;
+    private final DentistService dentistService;
+    private final AccountantService accountantService;
+    private final RewardHistoryService rewardHistoryService;
     @Autowired
-    private UserService userService;
-    @Autowired
-    private DentistService dentistService;
-    @Autowired
-    private AccountantService accountantService;
-    @Autowired
-    private RewardHistoryService rewardHistoryService;
+    public UserController(UserService userService,
+                          DentistService dentistService,
+                          AccountantService accountantService,
+                          RewardHistoryService rewardHistoryService) {
+        this.userService = userService;
+        this.dentistService = dentistService;
+        this.accountantService = accountantService;
+        this.rewardHistoryService = rewardHistoryService;
+    }
 
     @GetMapping("/my-reward-history")
     @HasRole(justCheckAuthentication = true)

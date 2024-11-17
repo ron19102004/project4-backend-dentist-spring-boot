@@ -24,14 +24,20 @@ import java.util.List;
 
 @Component
 public class BookingConsumerListener {
+    private final InvoiceServiceRepository invoiceServiceRepository;
+    private final PaymentRepository paymentRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final InvoiceRepository invoiceRepository;
     @Autowired
-    private InvoiceServiceRepository invoiceServiceRepository;
-    @Autowired
-    private PaymentRepository paymentRepository;
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-    @Autowired
-    private InvoiceRepository invoiceRepository;
+    public BookingConsumerListener(InvoiceServiceRepository invoiceServiceRepository,
+                                   PaymentRepository paymentRepository,
+                                   AppointmentRepository appointmentRepository,
+                                   InvoiceRepository invoiceRepository) {
+        this.invoiceServiceRepository = invoiceServiceRepository;
+        this.paymentRepository = paymentRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.invoiceRepository = invoiceRepository;
+    }
 
     @KafkaListener(
             topics = "booking-event",
@@ -44,41 +50,49 @@ public class BookingConsumerListener {
             exclude = {NullPointerException.class, IllegalArgumentException.class})
     @Transactional
     public void bookingHandler(BookingKafkaEvent event) {
-        Appointment appointment = appointmentRepository
-                .findById(event.getAppointmentId())
-                .orElseThrow(() -> ServiceException.builder()
+        try {
+            Appointment appointment = appointmentRepository
+                    .findById(event.getAppointmentId())
+                    .orElse(null);
+            if (appointment == null) {
+                throw ServiceException.builder()
                         .clazz(BookingConsumerListener.class)
-                        .message("Appointment not found")
-                        .status(HttpStatus.NOT_FOUND)
-                        .build());
+                        .message(event.getAppointmentId().toString())
+                        .build();
+            }
+            BigDecimal totalPrice = event.getServices().stream()
+                    .map(com.hospital.core.entities.service.Service::getPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        BigDecimal totalPrice = event.getServices().stream()
-                .map(com.hospital.core.entities.service.Service::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+            Invoice invoice = UserAppointmentMapper.toInvoice(event.getBookingAppointmentRequest());
+            invoice.setAmountOriginPaid(totalPrice);
+            invoice.setAppointment(appointment);
+            Invoice invoiceSaved = invoiceRepository.save(invoice);
 
-        Invoice invoice = UserAppointmentMapper.toInvoice(event.getBookingAppointmentRequest());
-        invoice.setAmountOriginPaid(totalPrice);
-        invoice.setAppointment(appointment);
-        Invoice invoiceSaved = invoiceRepository.save(invoice);
-
-        Payment payment = Payment.builder()
-                .amountPaid(totalPrice)
-                .paymentType(PaymentType.CASH)
-                .invoice(invoiceSaved)
-                .build();
-        paymentRepository.save(payment);
-
-        List<InvoiceService> invoiceServices = new ArrayList<>();
-        event.getServices().forEach(service -> {
-            invoiceServices.add(InvoiceService.builder()
-                    .service(service)
+            Payment payment = Payment.builder()
+                    .amountPaid(totalPrice)
+                    .paymentType(PaymentType.CASH)
                     .invoice(invoiceSaved)
-                    .priceServiceCurrent(service.getPrice())
-                    .nameServiceCurrent(service.getName())
-                    .pointRewardCurrent(service.getPointReward())
-                    .build());
-        });
-        invoiceServiceRepository.saveAll(invoiceServices);
-        //send email
+                    .build();
+            paymentRepository.save(payment);
+
+            List<InvoiceService> invoiceServices = new ArrayList<>();
+            event.getServices().forEach(service -> {
+                invoiceServices.add(InvoiceService.builder()
+                        .service(service)
+                        .invoice(invoiceSaved)
+                        .priceServiceCurrent(service.getPrice())
+                        .nameServiceCurrent(service.getName())
+                        .pointRewardCurrent(service.getPointReward())
+                        .build());
+            });
+            invoiceServiceRepository.saveAll(invoiceServices);
+            //send email
+        } catch (Exception e){
+            throw ServiceException.builder()
+                    .clazz(BookingConsumerListener.class)
+                    .message(event.getAppointmentId().toString())
+                    .build();
+        }
     }
 }

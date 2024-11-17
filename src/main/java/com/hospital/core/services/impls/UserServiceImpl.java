@@ -16,12 +16,16 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -45,6 +49,7 @@ public class UserServiceImpl implements UserService {
         this.entityManager.merge(user);
         return user;
     }
+
     @Transactional
     @Override
     public void resetRole(final Long id) {

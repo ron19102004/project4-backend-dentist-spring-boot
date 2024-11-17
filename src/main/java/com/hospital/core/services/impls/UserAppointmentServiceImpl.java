@@ -17,6 +17,7 @@ import com.hospital.core.mappers.AppointmentMapper;
 import com.hospital.core.mappers.UserAppointmentMapper;
 import com.hospital.core.services.UserAppointmentService;
 import com.hospital.kafka.events.BookingKafkaEvent;
+import com.hospital.kafka.producers.BookingKafkaEventProducer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -31,28 +32,36 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserAppointmentServiceImpl implements UserAppointmentService {
-    @Autowired
-    private DentistRepository dentistRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private InvoiceRepository invoiceRepository;
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-    @Autowired
-    private ServiceRepository serviceRepository;
-    @Autowired
-    private InvoiceServiceRepository invoiceServiceRepository;
-    @Autowired
-    private PaymentRepository paymentRepository;
-    @Autowired
-    private RewardHistoryRepository rewardHistoryRepository;
+    private final DentistRepository dentistRepository;
+    private final UserRepository userRepository;
+    private final InvoiceRepository invoiceRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final ServiceRepository serviceRepository;
+    private final RewardHistoryRepository rewardHistoryRepository;
+    private final BookingKafkaEventProducer bookingKafkaEventProducer;
     @PersistenceContext
     private EntityManager entityManager;
     private final static long MAX_APPOINTMENT_IN_DAY = 50;
+    @Autowired
+    public UserAppointmentServiceImpl(BookingKafkaEventProducer bookingKafkaEventProducer,
+                                      RewardHistoryRepository rewardHistoryRepository,
+                                      ServiceRepository serviceRepository,
+                                      AppointmentRepository appointmentRepository,
+                                      InvoiceRepository invoiceRepository,
+                                      UserRepository userRepository,
+                                      DentistRepository dentistRepository) {
+        this.bookingKafkaEventProducer = bookingKafkaEventProducer;
+        this.rewardHistoryRepository = rewardHistoryRepository;
+        this.serviceRepository = serviceRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.invoiceRepository = invoiceRepository;
+        this.userRepository = userRepository;
+        this.dentistRepository = dentistRepository;
+    }
 
+    @Transactional
     @Override
-    public BookingKafkaEvent booking(Long userId, BookingAppointmentRequest bookingAppointmentRequest) {
+    public Long booking(Long userId, BookingAppointmentRequest bookingAppointmentRequest) {
         if (userId == bookingAppointmentRequest.dentistId()) {
             throw ServiceException.builder()
                     .message("Hồ sơ không hợp lệ. Mã người dùng và mã bác sĩ trùng nhau!")
@@ -116,7 +125,12 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
         appointment.setUser(user);
         appointment.setDentist(dentist);
         Appointment appointmentSaved = appointmentRepository.save(appointment);
-        return new BookingKafkaEvent(appointmentSaved.getId(), services, bookingAppointmentRequest);
+        BookingKafkaEvent bookingKafkaEvent = new BookingKafkaEvent(
+                appointmentSaved.getId(),
+                services,
+                bookingAppointmentRequest);
+        bookingKafkaEventProducer.pushBookingKafkaEvent(bookingKafkaEvent);
+        return appointmentSaved.getId();
     }
 
     @Override

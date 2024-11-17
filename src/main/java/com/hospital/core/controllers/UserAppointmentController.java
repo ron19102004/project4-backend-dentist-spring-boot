@@ -9,8 +9,6 @@ import com.hospital.core.entities.account.User;
 import com.hospital.core.entities.work.Appointment;
 import com.hospital.core.services.UserAppointmentService;
 import com.hospital.infrastructure.utils.ResponseLayout;
-import com.hospital.kafka.events.BookingKafkaEvent;
-import com.hospital.kafka.producers.BookingKafkaEventProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,23 +17,23 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users/appointments/v1")
 public class UserAppointmentController {
+
+    private final UserAppointmentService userAppointmentService;
     @Autowired
-    private UserAppointmentService userAppointmentService;
-    @Autowired
-    private BookingKafkaEventProducer bookingKafkaEventProducer;
+    public UserAppointmentController(UserAppointmentService userAppointmentService) {
+        this.userAppointmentService = userAppointmentService;
+    }
 
     @PostMapping("/booking")
     @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 5)
     @WithRateLimitRequest(duration = 3000)
-    public ResponseEntity<ResponseLayout<Object>> booking(@AuthenticationPrincipal User user,
-                                                          @RequestBody BookingAppointmentRequest bookingAppointmentRequest) {
-        BookingKafkaEvent bookingKafkaEvent = userAppointmentService.booking(user.getId(), bookingAppointmentRequest);
-        bookingKafkaEventProducer.pushBookingKafkaEvent(bookingKafkaEvent);
-        return ResponseEntity.ok(ResponseLayout.builder()
+    public ResponseEntity<ResponseLayout<Long>> booking(@AuthenticationPrincipal User user,
+                                                        @RequestBody BookingAppointmentRequest bookingAppointmentRequest) {
+        return ResponseEntity.ok(ResponseLayout.<Long>builder()
                 .message("Đặt hẹn thành công")
                 .success(true)
-                .data(bookingKafkaEvent.getAppointmentId())
+                .data(userAppointmentService.booking(user.getId(), bookingAppointmentRequest))
                 .build());
     }
 

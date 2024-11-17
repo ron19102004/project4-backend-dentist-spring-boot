@@ -21,12 +21,15 @@ import java.util.List;
 
 @org.springframework.stereotype.Service
 public class ServiceServiceImpl implements ServiceService {
-    @Autowired
-    private ServiceRepository serviceRepository;
+    private final ServiceRepository serviceRepository;
     @PersistenceContext
     private EntityManager entityManager;
+    private final InvoiceServiceRepository invoiceServiceRepository;
     @Autowired
-    private InvoiceServiceRepository invoiceServiceRepository;
+    public ServiceServiceImpl(ServiceRepository serviceRepository, InvoiceServiceRepository invoiceServiceRepository) {
+        this.serviceRepository = serviceRepository;
+        this.invoiceServiceRepository = invoiceServiceRepository;
+    }
 
     @Override
     public Service create(final ServiceCreateRequest serviceCreateRequest) {

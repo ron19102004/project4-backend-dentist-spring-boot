@@ -10,6 +10,7 @@ public class RewardMapper {
         return Reward.builder()
                 .content(rewardCreateRequest.content())
                 .points(rewardCreateRequest.points())
+                .isOpened(false)
                 .build();
     }
 

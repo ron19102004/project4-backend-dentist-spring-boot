@@ -33,23 +33,33 @@ import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private MailerService mailerService;
-    @Autowired
-    private JwtUtils jwtUtils;
-    @Autowired
-    private TokenService tokenService;
-    @Autowired
-    private RewardHistoryService rewardHistoryService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final MailerService mailerService;
+    private final JwtUtils jwtUtils;
+    private final TokenService tokenService;
+
+    private final RewardHistoryService rewardHistoryService;
     @PersistenceContext
     private EntityManager entityManager;
     private static final long TWO_FACTOR_AUTHENTICATION_EXPIRED_TIME = 1;
     private static final int OTP_LENGTH = 6;
     private static final long POINT_WHEN_REGISTER_ACCOUNT = 10;
+
+    @Autowired
+    public AuthServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder,
+                           MailerService mailerService,
+                           JwtUtils jwtUtils,
+                           TokenService tokenService,
+                           RewardHistoryService rewardHistoryService) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.mailerService = mailerService;
+        this.jwtUtils = jwtUtils;
+        this.tokenService = tokenService;
+        this.rewardHistoryService = rewardHistoryService;
+    }
 
     @Transactional
     @Override

@@ -18,13 +18,18 @@ import java.util.Map;
 
 @Component
 public class JwtUtils {
+    private final JwtEncoder jwtAccessTokenEncoder;
+    private final JwtEncoder jwtRefreshTokenEncoder;
+    private final JwtDecoder jwtAccessTokenDecoder;
     @Autowired
-    private JwtEncoder jwtAccessTokenEncoder;
-    @Autowired
-    @Qualifier("jwtRefreshTokenEncoder")
-    private JwtEncoder jwtRefreshTokenEncoder;
-    @Autowired
-    private JwtDecoder jwtAccessTokenDecoder;
+    public JwtUtils(JwtEncoder jwtAccessTokenEncoder,
+                    @Qualifier("jwtRefreshTokenEncoder")
+                    JwtEncoder jwtRefreshTokenEncoder,
+                    JwtDecoder jwtAccessTokenDecoder) {
+        this.jwtAccessTokenEncoder = jwtAccessTokenEncoder;
+        this.jwtRefreshTokenEncoder = jwtRefreshTokenEncoder;
+        this.jwtAccessTokenDecoder = jwtAccessTokenDecoder;
+    }
 
     public String encodeToken(final TokenDTO tokenDTO, final long amountToAdd) {
 

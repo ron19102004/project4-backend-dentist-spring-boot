@@ -4,6 +4,7 @@ import com.hospital.kafka.events.BookingKafkaEvent;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +14,12 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.CommonErrorHandler;
-import org.springframework.kafka.listener.MessageListenerContainer;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.KafkaListenerErrorHandler;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
+import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,20 +50,18 @@ public class KafkaBookingConsumerConf {
         return deserializer;
     }
 
+    private CommonErrorHandler commonErrorHandler() {
+        return new DefaultErrorHandler((record, exception) -> {
+            System.out.println(exception);
+        }, new FixedBackOff(0L, 2L));
+    }
+
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, BookingKafkaEvent> bookingEventConcurrentKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, BookingKafkaEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(bookingConsumerFactory());
-        factory.setCommonErrorHandler(new CommonErrorHandler() {
-            @Override
-            public void handleOtherException(Exception thrownException,
-                                             Consumer<?, ?> consumer,
-                                             MessageListenerContainer container,
-                                             boolean batchListener) {
-                System.out.println(thrownException.getMessage());
-            }
-        });
+        factory.setCommonErrorHandler(commonErrorHandler());
         return factory;
     }
 }

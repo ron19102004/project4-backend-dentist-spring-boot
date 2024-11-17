@@ -21,8 +21,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/dentists/appointments/v1")
 public class DentistAppointmentController {
+
+    private final DentistAppointmentService dentistAppointmentService;
+
     @Autowired
-    private DentistAppointmentService dentistAppointmentService;
+    public DentistAppointmentController(DentistAppointmentService dentistAppointmentService) {
+        this.dentistAppointmentService = dentistAppointmentService;
+    }
 
     @GetMapping("/{dentistId}/in-7-days-later")
     @WithRateLimitIPAddress(limit = 5, duration = 5000)

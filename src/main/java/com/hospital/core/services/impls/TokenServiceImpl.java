@@ -16,14 +16,16 @@ import java.util.*;
 
 @Service
 public class TokenServiceImpl implements TokenService {
-    @Autowired
-    private TokenRepository tokenRepository;
-    @Autowired
-    private UserService userService;
+    private final TokenRepository tokenRepository;
+    private final UserService userService;
     @PersistenceContext
     private EntityManager entityManager;
     private static final int MAX_TOKEN_LOGIN = 5;
-
+    @Autowired
+    public TokenServiceImpl(TokenRepository tokenRepository, UserService userService) {
+        this.tokenRepository = tokenRepository;
+        this.userService = userService;
+    }
 
     @Override
     public boolean validateAccessToken(final String accessToken) {
