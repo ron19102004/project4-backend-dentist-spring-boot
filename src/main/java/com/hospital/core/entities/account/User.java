@@ -41,7 +41,6 @@ public class User extends EntityLayout implements UserDetails {
     @Column(unique = true)
     private String email;
     @Enumerated(EnumType.STRING)
-    @JsonIgnore
     private Role role;
     @Column(columnDefinition = "LONGTEXT")
     @JsonIgnore

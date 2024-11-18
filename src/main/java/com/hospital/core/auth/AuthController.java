@@ -94,7 +94,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    @WithRateLimitIPAddress(limit = 1, duration = 15000)
+    @WithRateLimitIPAddress(limit = 10, duration = 15000)
     public ResponseEntity<ResponseLayout<TokenResponse>> login(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestBody LoginRequest loginRequest) {
@@ -113,7 +113,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify-otp")
-    @WithRateLimitIPAddress(limit = 1, duration = 15000)
+    @WithRateLimitIPAddress(limit = 5, duration = 15000)
     public ResponseEntity<ResponseLayout<TokenResponse>> verifyOTP(
             @RequestHeader(value = "User-Agent") String userAgent,
             @RequestParam("otp") String otp,
@@ -137,7 +137,7 @@ public class AuthController {
                 .build());
     }
 
-    @WithRateLimitIPAddress(limit = 1)
+    @WithRateLimitIPAddress(limit = 5)
     @PostMapping("/refresh-token")
     public ResponseEntity<ResponseLayout<TokenResponse>> token(
             @RequestHeader(value = "User-Agent") String userAgent,

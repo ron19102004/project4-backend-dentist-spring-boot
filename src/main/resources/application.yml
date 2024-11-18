@@ -28,6 +28,7 @@ redis:
   keys:
     reward-all: reward:all
     specialize-all: specialize:all
+    service-all : service:all
 spring:
   kafka:
     bootstrap-servers: localhost:9092

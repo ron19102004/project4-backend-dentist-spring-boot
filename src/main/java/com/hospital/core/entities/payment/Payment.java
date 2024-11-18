@@ -28,6 +28,7 @@ public class Payment {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PaymentType paymentType;
+    private Long discountPercent;
     //Relationships
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)

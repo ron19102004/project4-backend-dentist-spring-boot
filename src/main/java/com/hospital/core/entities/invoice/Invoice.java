@@ -8,6 +8,7 @@ import com.hospital.core.entities.work.Appointment;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -26,6 +27,9 @@ public class Invoice {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @UpdateTimestamp
+    private Date updatedAt;
     @JsonIgnore
     @Temporal(TemporalType.TIMESTAMP)
     private Date  deletedAt;
