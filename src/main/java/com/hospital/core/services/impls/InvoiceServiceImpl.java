@@ -24,7 +24,22 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     @Override
-    public InvoicesResponse getAllInvoices(int pageNumber, InvoiceStatus status) {
+    public InvoicesResponse getByAppointmentIdAndPageNumberAndStatus(long appointmentId, int pageNumber, InvoiceStatus status) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.by("id").descending());
+        Page<Invoice> invoices = invoiceRepository.findAllByIdAndStatus(appointmentId, status, pageable);
+        return InvoicesResponse.builder()
+                .pageNumber(pageNumber)
+                .status(status)
+                .invoices(invoices
+                        .toList()
+                        .stream()
+                        .map(AppointmentMapper::toInvoiceDetailsResponse)
+                        .toList())
+                .build();
+    }
+
+    @Override
+    public InvoicesResponse getByPageNumberAndStatus(int pageNumber, InvoiceStatus status) {
         Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.by("id").descending());
         Page<Invoice> invoices = invoiceRepository.findAllByStatus(status, pageable);
         return InvoicesResponse.builder()

@@ -71,7 +71,6 @@ public class SpecializeServiceImpl implements SpecializeService {
         specialize.setName(specializeMapper.getName());
         specialize.setSlug(specializeMapper.getSlug());
         specialize.setDescription(specializeMapper.getDescription());
-        this.entityManager.merge(specialize);
         List<SpecializeResponse> specializeResponses = getAll();
         eventPublisher.publishEvent(new UpdateListSpecializeEvent(this,specializeResponses));
     }
@@ -88,7 +87,6 @@ public class SpecializeServiceImpl implements SpecializeService {
                     .build();
         }
         specialize.setDeletedAt(VietNamTime.dateNow());
-        this.entityManager.merge(specialize);
         List<SpecializeResponse> specializeResponses = getAll();
         eventPublisher.publishEvent(new UpdateListSpecializeEvent(this,specializeResponses));
     }

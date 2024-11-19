@@ -12,5 +12,5 @@ import java.util.List;
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice,Long> {
     Page<Invoice> findAllByStatus(InvoiceStatus status, Pageable pageable);
-
+    Page<Invoice> findAllByIdAndStatus(Long id,InvoiceStatus status, Pageable pageable);
 }

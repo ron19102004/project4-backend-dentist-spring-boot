@@ -2,6 +2,7 @@ package com.hospital.core.controllers;
 
 import com.hospital.core.annotations.HasRole;
 import com.hospital.core.annotations.WithRateLimitIPAddress;
+import com.hospital.core.dto.reward.RewardChangeStatusRequest;
 import com.hospital.core.dto.reward.RewardCreateRequest;
 import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.reward.Reward;
@@ -109,6 +110,38 @@ public class RewardController {
                 .builder()
                 .message("Xóa thành công")
                 .success(true)
+                .build());
+    }
+
+    @PostMapping("/change-open")
+    @HasRole(roles = {Role.ACCOUNTANT})
+    public ResponseEntity<ResponseLayout<Object>> changeStatusReward(
+            @RequestBody RewardChangeStatusRequest request) {
+        this.rewardService.changeOpen(request);
+        return ResponseEntity.ok(ResponseLayout
+                .builder()
+                .message("Thay đổi thành công")
+                .success(true)
+                .build());
+    }
+
+    @GetMapping("/accountant/all")
+    @HasRole(roles = {Role.ACCOUNTANT})
+    public ResponseEntity<ResponseLayout<List<Reward>>> getAllRewards(
+            @RequestParam("isDeleted") Boolean isDeleted,
+            @RequestParam("pageNumber") int pageNumber
+    ) {
+        List<Reward> rewards;
+        if (!isDeleted) {
+            rewards = rewardService.getAllByDeletedIsNull(pageNumber);
+        } else {
+            rewards = rewardService.getAllByDeleted(pageNumber);
+        }
+        return ResponseEntity.ok(ResponseLayout
+                .<List<Reward>>builder()
+                .message("Lấy dữ liệu thành công")
+                .success(true)
+                .data(rewards)
                 .build());
     }
 }

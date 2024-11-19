@@ -15,6 +15,8 @@ public record ServiceCreateRequest(
         @NotEmpty
         String description,
         @NotNull
-        Long pointReward
+        Long pointReward,
+        @NotNull
+        String poster
 ) {
 }

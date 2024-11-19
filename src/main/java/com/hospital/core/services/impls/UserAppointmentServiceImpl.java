@@ -188,6 +188,5 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
                     .build();
         }
         invoice.setRewardHistory(rewardHistory);
-        entityManager.merge(invoice);
     }
 }

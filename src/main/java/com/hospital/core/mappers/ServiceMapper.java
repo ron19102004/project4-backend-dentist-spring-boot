@@ -2,6 +2,7 @@ package com.hospital.core.mappers;
 
 import com.hospital.core.dto.service.ServiceCreateRequest;
 import com.hospital.core.entities.service.Service;
+import com.hospital.infrastructure.utils.GgImageUtil;
 import com.hospital.infrastructure.utils.Slugify;
 import lombok.experimental.UtilityClass;
 
@@ -14,6 +15,7 @@ public class ServiceMapper {
                 .description(serviceCreateRequest.description())
                 .price(serviceCreateRequest.price())
                 .pointReward(serviceCreateRequest.pointReward())
+                .poster(GgImageUtil.parse(serviceCreateRequest.poster()))
                 .build();
     }
 }

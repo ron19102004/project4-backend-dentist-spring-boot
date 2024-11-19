@@ -61,7 +61,6 @@ public class DentistServiceImpl implements DentistService {
                     .build();
         }
         user.setRole(Role.DENTIST);
-        this.entityManager.merge(user);
         return this.dentistRepository.save(AccountMapper.toDentist(requestDto, user, specialize));
     }
 }

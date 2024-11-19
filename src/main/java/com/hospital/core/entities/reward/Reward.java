@@ -28,6 +28,6 @@ public class Reward extends EntityLayout {
     private Boolean isOpened;
     //Relationships
     @JsonIgnore
-    @OneToMany(mappedBy = "reward",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reward")
     private List<RewardHistory> rewardHistories;
 }

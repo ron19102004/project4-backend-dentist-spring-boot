@@ -48,7 +48,6 @@ public class AccountantServiceImpl implements AccountantService {
                     .build();
         }
         user.setRole(Role.ACCOUNTANT);
-        this.entityManager.merge(user);
         return this.accountantRepository.save(AccountMapper.toAccountant(requestDto, user));
     }
 

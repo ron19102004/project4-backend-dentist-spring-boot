@@ -9,10 +9,7 @@ import com.hospital.core.services.InvoiceService;
 import com.hospital.infrastructure.utils.ResponseLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/invoices/v1")
@@ -23,14 +20,24 @@ public class InvoiceController {
     public InvoiceController(InvoiceService invoiceService) {
         this.invoiceService = invoiceService;
     }
-    @GetMapping("/all/{pageNumber}/{status}")
+
+    @GetMapping("/all")
     @HasRole(roles = {Role.ACCOUNTANT})
-    public ResponseEntity<ResponseLayout<InvoicesResponse>> getInvoices(@PathVariable("pageNumber") int pageNumber,
-                                                                        @PathVariable("status") InvoiceStatus status) {
+    public ResponseEntity<ResponseLayout<InvoicesResponse>> getInvoices(
+            @RequestParam("pageNumber") int pageNumber,
+            @RequestParam(value = "appointmentId", required = false, defaultValue = "0") long appointmentId,
+            @RequestParam("status") InvoiceStatus status) {
+        InvoicesResponse invoicesResponse;
+        if (appointmentId == 0) {
+            invoicesResponse = invoiceService.getByPageNumberAndStatus(pageNumber, status);
+        } else {
+            invoicesResponse = invoiceService.getByAppointmentIdAndPageNumberAndStatus(appointmentId, pageNumber, status);
+        }
         return ResponseEntity.ok(ResponseLayout.<InvoicesResponse>builder()
-                .data(invoiceService.getAllInvoices(pageNumber, status))
+                .data(invoicesResponse)
                 .success(true)
                 .message("Lấy dữ liệu thành công")
                 .build());
     }
+
 }

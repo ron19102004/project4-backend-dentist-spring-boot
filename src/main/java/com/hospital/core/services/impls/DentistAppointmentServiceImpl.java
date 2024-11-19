@@ -96,6 +96,5 @@ public class DentistAppointmentServiceImpl implements DentistAppointmentService 
         dentalRecord.setTreatment(request.treatment());
         dentalRecord.setDiagnosis(request.diagnosis());
         dentalRecord.setUpdatedAt(VietNamTime.dateNow());
-        entityManager.merge(dentalRecord);
     }
 }

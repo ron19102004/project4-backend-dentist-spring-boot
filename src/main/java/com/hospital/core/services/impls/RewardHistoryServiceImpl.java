@@ -64,7 +64,6 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
         Long newPoint = myRewardPoint.getPoint() + point;
         myRewardPoint.setPoint(newPoint);
         myRewardPoint.setLastUpdatedAt(VietNamTime.dateNow());
-        entityManager.merge(myRewardPoint);
         RewardHistory rewardHistory = RewardHistory.builder()
                 .content(message)
                 .pointsUsed(point)

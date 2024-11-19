@@ -1,6 +1,8 @@
 package com.hospital.core.mappers;
 
 import com.hospital.core.dto.account.AccountantDentistCreateRequest;
+import com.hospital.core.dto.account.CheckUserExistResponse;
+import com.hospital.core.dto.account.UserDetailsForAdminResponse;
 import com.hospital.core.entities.account.Accountant;
 import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.Specialize;
@@ -23,6 +25,24 @@ public class AccountMapper {
                 .email(requestDto.email())
                 .description(requestDto.description())
                 .specialize(specialize)
+                .build();
+    }
+    public UserDetailsForAdminResponse toUserDetailsForAdminResponse(User user){
+        return UserDetailsForAdminResponse.builder()
+                .accountant(user.getAccountant())
+                .id(user.getId())
+                .dentist(user.getDentist())
+                .role(user.getRole())
+                .username(user.getUsername())
+                .fullName(user.getFullName())
+                .phone(user.getPhoneNumber())
+                .email(user.getEmail())
+                .build();
+    }
+    public CheckUserExistResponse toCheckUserExistResponse(User user){
+        return CheckUserExistResponse.builder()
+                .isExist(user != null)
+                .role(user != null ? user.getRole() : null)
                 .build();
     }
 }

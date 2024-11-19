@@ -1,18 +1,27 @@
 package com.hospital.core.services.impls;
 
+import com.hospital.core.dto.account.CheckUserExistResponse;
 import com.hospital.core.dto.account.UserChangeRoleRequest;
+import com.hospital.core.dto.account.UserDetailsForAdminResponse;
 import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.account.User;
+import com.hospital.core.mappers.AccountMapper;
 import com.hospital.core.repositories.UserRepository;
 import com.hospital.core.services.UserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,7 +55,6 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Người dùng không tồn tại");
         }
         user.setRole(userChangeRoleRequest.role());
-        this.entityManager.merge(user);
         return user;
     }
 
@@ -58,6 +66,22 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("Người dùng không tồn tại");
         }
         user.setRole(Role.PATIENT);
-        this.entityManager.merge(user);
+
+    }
+
+    @Override
+    public List<UserDetailsForAdminResponse> getAllUsersHasRole(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber - 1, 10, Sort.by("id").descending());
+        return userRepository
+                .findAllByRoleIsNot(Role.PATIENT, pageable)
+                .toList()
+                .stream()
+                .map(AccountMapper::toUserDetailsForAdminResponse)
+                .toList();
+    }
+
+    @Override
+    public CheckUserExistResponse checkUserExist(Long id) {
+        return AccountMapper.toCheckUserExistResponse(userRepository.findById(id).orElse(null));
     }
 }

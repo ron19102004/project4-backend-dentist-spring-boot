@@ -9,6 +9,8 @@ public record RewardCreateRequest(
         Long points,
         @NotEmpty
         @NotNull
-        String content
+        String content,
+        @NotNull
+        String poster
 ) {
 }

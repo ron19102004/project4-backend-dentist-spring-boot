@@ -63,7 +63,6 @@ public class ServiceServiceImpl implements ServiceService {
                     .build();
         }
         service.setDeletedAt(VietNamTime.dateNow());
-        this.entityManager.merge(service);
         List<Service> services = getAll();
         eventPublisher.publishEvent(new UpdateListServiceEvent(this,services));
     }

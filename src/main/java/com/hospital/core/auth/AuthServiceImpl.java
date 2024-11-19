@@ -80,7 +80,6 @@ public class AuthServiceImpl implements AuthService {
                 .subject(email)
                 .build(), 5);
         user.setTokenResetPassword(token);
-        this.entityManager.merge(user);
         mailerService.sendResetPasswordRequest(user, token);
     }
 
@@ -113,7 +112,6 @@ public class AuthServiceImpl implements AuthService {
         String password = (String) tokenDTO.claims().get("password");
         user.setPassword(passwordEncoder.encode(password));
         user.setTokenResetPassword(null);
-        this.entityManager.merge(user);
         this.mailerService.sendResetPasswordSuccess(user, password);
     }
 
@@ -126,7 +124,6 @@ public class AuthServiceImpl implements AuthService {
             Instant now = VietNamTime.instantNow();
             userDb.setCodeTwoFactorAuthentication(codeTFA);
             userDb.setCodeTFAExpirationAt(Date.from(now.plus(TWO_FACTOR_AUTHENTICATION_EXPIRED_TIME, ChronoUnit.MINUTES)));
-            this.entityManager.merge(userDb);
             Map<String, Object> claims = new HashMap<>();
             claims.put("code", codeTFA);
             String tokenToVerifyOTP = jwtUtils.encodeToken(
@@ -197,7 +194,6 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setCodeTFAExpirationAt(null);
         user.setCodeTwoFactorAuthentication(null);
-        this.entityManager.merge(user);
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         JwtCreateTokenDTO jwtCreateTokenDTO = jwtUtils.createToken(authentication);
         this.saveToken(jwtCreateTokenDTO, userAgent);
@@ -220,7 +216,6 @@ public class AuthServiceImpl implements AuthService {
                     .build();
         }
         userDb.setActiveTwoFactorAuthentication(!user.isActiveTwoFactorAuthentication());
-        this.entityManager.merge(userDb);
     }
 
     public void saveToken(JwtCreateTokenDTO jwtCreateTokenDTO, String userAgent) {

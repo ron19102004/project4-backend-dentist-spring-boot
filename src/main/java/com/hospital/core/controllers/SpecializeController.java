@@ -112,6 +112,7 @@ public class SpecializeController {
         return ResponseEntity.ok(ResponseLayout.builder()
                 .message("Chỉnh sửa chuyên ngành thành công")
                 .success(true)
+                .data(null)
                 .build());
     }
 
