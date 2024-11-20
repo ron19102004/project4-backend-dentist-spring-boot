@@ -104,7 +104,7 @@ public class UserController {
                 .build());
     }
 
-    @HasRole(roles = Role.ADMIN)
+    @HasRole(roles = {Role.ADMIN})
     @GetMapping("/admin/all-user-has-role")
     public ResponseEntity<ResponseLayout<List<UserDetailsForAdminResponse>>> getAllUserHasRole(
             @RequestParam("pageNumber") int pageNumber
@@ -117,8 +117,8 @@ public class UserController {
                 .build());
     }
 
-    @HasRole(roles = Role.ADMIN)
-    @GetMapping("/admin/check-user-exist/{id}")
+    @HasRole(roles = {Role.ADMIN})
+    @PostMapping("/admin/check-user-exist/{id}")
     public ResponseEntity<ResponseLayout<CheckUserExistResponse>> checkUserExist(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ResponseLayout.<CheckUserExistResponse>builder()
                 .message("Truy vấn thành công")

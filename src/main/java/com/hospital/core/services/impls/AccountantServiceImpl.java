@@ -39,15 +39,14 @@ public class AccountantServiceImpl implements AccountantService {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
-        boolean isPresent = this.accountantRepository.findById(requestDto.userId()).isPresent();
-        if (isPresent) {
-            throw ServiceException.builder()
-                    .message("Tài khoản thu ngân đã được thiết lập")
-                    .clazz(AccountantServiceImpl.class)
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .build();
-        }
+        Accountant accountant = this.accountantRepository.findById(requestDto.userId()).orElse(null);
         user.setRole(Role.ACCOUNTANT);
+        if (accountant != null) {
+            Accountant accFromReq = AccountMapper.toAccountant(requestDto, user);
+            accountant.setPhoneNumber(accFromReq.getPhoneNumber());
+            accountant.setEmail(accFromReq.getEmail());
+            return accountant;
+        }
         return this.accountantRepository.save(AccountMapper.toAccountant(requestDto, user));
     }
 

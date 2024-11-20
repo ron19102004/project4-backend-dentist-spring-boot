@@ -26,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     @PersistenceContext
     private EntityManager entityManager;
     private final static long MAX_APPOINTMENT_IN_DAY = 50;
+
     @Autowired
     public UserAppointmentServiceImpl(BookingKafkaEventProducer bookingKafkaEventProducer,
                                       RewardHistoryRepository rewardHistoryRepository,
@@ -62,6 +64,14 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     @Transactional
     @Override
     public Long booking(Long userId, BookingAppointmentRequest bookingAppointmentRequest) {
+        if (bookingAppointmentRequest.appointmentDate().isBefore(LocalDate.now()) ||
+                bookingAppointmentRequest.appointmentDate().isEqual(LocalDate.now())) {
+            throw ServiceException.builder()
+                    .message("Ngày hẹn không hợp lệ.")
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
         if (userId == bookingAppointmentRequest.dentistId()) {
             throw ServiceException.builder()
                     .message("Hồ sơ không hợp lệ. Mã người dùng và mã bác sĩ trùng nhau!")
@@ -151,6 +161,13 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
+        if (rewardHistory.getReward() == null){
+            throw ServiceException.builder()
+                    .message("Không tìm thấy phần thưởng với mã: " + rewardHistoryId)
+                    .clazz(UserAppointmentServiceImpl.class)
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
         if (!Objects.equals(rewardHistory.getReward().getId(), userId)) {
             throw ServiceException.builder()
                     .message("Mã đổi thưởng không hợp lệ")
@@ -168,7 +185,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
         Invoice invoice = invoiceRepository.findById(appointmentId).orElse(null);
         if (invoice == null) {
             throw ServiceException.builder()
-                    .message("Không tìm thấy hóa đơn với các mã: " + appointmentId)
+                    .message("Không tìm thấy hóa đơn với  mã: " + appointmentId)
                     .clazz(UserAppointmentServiceImpl.class)
                     .status(HttpStatus.NOT_FOUND)
                     .build();

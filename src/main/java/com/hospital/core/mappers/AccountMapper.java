@@ -43,6 +43,10 @@ public class AccountMapper {
         return CheckUserExistResponse.builder()
                 .isExist(user != null)
                 .role(user != null ? user.getRole() : null)
+                .email(user != null ? user.getEmail(): "Không rõ")
+                .fullName(user != null ? user.getFullName(): "Không rõ")
+                .phone(user != null ? user.getPhoneNumber(): "Không rõ")
+                .username(user != null ? user.getUsername(): "Không rõ")
                 .build();
     }
 }

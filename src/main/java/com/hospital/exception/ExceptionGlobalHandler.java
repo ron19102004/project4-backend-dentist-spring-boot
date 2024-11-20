@@ -3,6 +3,7 @@ package com.hospital.exception;
 import com.hospital.infrastructure.utils.ResponseLayout;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,7 +35,15 @@ public class ExceptionGlobalHandler {
                         .success(false)
                         .build());
     }
-
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ResponseLayout<Object>> handler(HttpMessageNotReadableException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ResponseLayout.builder()
+                        .message("Dữ liệu truyền không hợp lệ")
+                        .success(false)
+                        .build());
+    }
     @ExceptionHandler(AuthorizationDeniedCustomException.class)
     public ResponseEntity<ResponseLayout<Object>> handler(AuthorizationDeniedCustomException e) {
         return ResponseEntity

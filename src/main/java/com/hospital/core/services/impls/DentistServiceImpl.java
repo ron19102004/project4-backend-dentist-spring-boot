@@ -44,14 +44,8 @@ public class DentistServiceImpl implements DentistService {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
-        boolean isPresent = this.dentistRepository.findById(requestDto.userId()).isPresent();
-        if (isPresent) {
-            throw ServiceException.builder()
-                    .message("Tài khoản nha sĩ đã được thiết lập")
-                    .clazz(DentistServiceImpl.class)
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .build();
-        }
+        Dentist dentist = this.dentistRepository.findById(requestDto.userId()).orElse(null);
+        user.setRole(Role.DENTIST);
         Specialize specialize = this.specializeService.getByIdNormal(requestDto.specializeId());
         if (specialize == null) {
             throw ServiceException.builder()
@@ -60,7 +54,14 @@ public class DentistServiceImpl implements DentistService {
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
         }
-        user.setRole(Role.DENTIST);
+        if (dentist != null) {
+            Dentist denFromReq = AccountMapper.toDentist(requestDto, user, specialize);
+            dentist.setSpecialize(denFromReq.getSpecialize());
+            dentist.setEmail(denFromReq.getEmail());
+            dentist.setPhoneNumber(dentist.getPhoneNumber());
+            dentist.setDescription(denFromReq.getDescription());
+            return dentist;
+        }
         return this.dentistRepository.save(AccountMapper.toDentist(requestDto, user, specialize));
     }
 }
