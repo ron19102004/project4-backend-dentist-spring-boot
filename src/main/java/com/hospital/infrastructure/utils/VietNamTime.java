@@ -29,7 +29,9 @@ public class VietNamTime {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         return zonedDateTime.format(formatter);
     }
-
+    public LocalDate toLocalDate(Date date){
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
     public Date[] getStartAndEndOfDay(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);

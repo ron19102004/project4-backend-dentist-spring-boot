@@ -7,6 +7,7 @@ import com.hospital.core.entities.account.Accountant;
 import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.Specialize;
 import com.hospital.core.entities.account.User;
+import com.hospital.infrastructure.utils.GgImageUtil;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
@@ -14,6 +15,7 @@ public class AccountMapper {
     public Accountant toAccountant(AccountantDentistCreateRequest requestDto, User user){
         return Accountant.builder()
                 .user(user)
+                .avatar(GgImageUtil.parse(requestDto.avatar()))
                 .email(requestDto.email())
                 .phoneNumber(requestDto.phoneNumber())
                 .build();
@@ -21,6 +23,7 @@ public class AccountMapper {
     public Dentist toDentist(AccountantDentistCreateRequest requestDto, User user, Specialize specialize){
         return Dentist.builder()
                 .user(user)
+                .avatar(GgImageUtil.parse(requestDto.avatar()))
                 .phoneNumber(requestDto.phoneNumber())
                 .email(requestDto.email())
                 .description(requestDto.description())

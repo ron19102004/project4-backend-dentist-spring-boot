@@ -26,6 +26,8 @@ public class Accountant {
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
+    @Column(columnDefinition = "LONGTEXT")
+    private String avatar;
     //Relationships
     @MapsId
     @JsonIgnore

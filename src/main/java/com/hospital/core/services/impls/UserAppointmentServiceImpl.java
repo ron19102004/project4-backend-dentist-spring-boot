@@ -8,6 +8,8 @@ import com.hospital.core.entities.invoice.Invoice;
 import com.hospital.core.entities.reward.RewardHistory;
 import com.hospital.core.entities.work.Appointment;
 import com.hospital.core.entities.work.AppointmentStatus;
+import com.hospital.core.entities.work.DentalRecord;
+import com.hospital.core.mappers.DentistAppointmentMapper;
 import com.hospital.core.repositories.*;
 import com.hospital.exception.ServiceException;
 import com.hospital.core.mappers.AppointmentMapper;
@@ -15,6 +17,7 @@ import com.hospital.core.mappers.UserAppointmentMapper;
 import com.hospital.core.services.UserAppointmentService;
 import com.hospital.infrastructure.kafka.events.BookingKafkaEvent;
 import com.hospital.infrastructure.kafka.producers.BookingKafkaEventProducer;
+import com.hospital.infrastructure.utils.VietNamTime;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -36,6 +39,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     private final ServiceRepository serviceRepository;
     private final RewardHistoryRepository rewardHistoryRepository;
     private final BookingKafkaEventProducer bookingKafkaEventProducer;
+    private final DentalRecordRepository dentalRecordRepository;
     @PersistenceContext
     private EntityManager entityManager;
     private final static long MAX_APPOINTMENT_IN_DAY = 50;
@@ -47,8 +51,10 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
                                       AppointmentRepository appointmentRepository,
                                       InvoiceRepository invoiceRepository,
                                       UserRepository userRepository,
-                                      DentistRepository dentistRepository) {
+                                      DentistRepository dentistRepository,
+                                      DentalRecordRepository dentalRecordRepository) {
         this.bookingKafkaEventProducer = bookingKafkaEventProducer;
+        this.dentalRecordRepository = dentalRecordRepository;
         this.rewardHistoryRepository = rewardHistoryRepository;
         this.serviceRepository = serviceRepository;
         this.appointmentRepository = appointmentRepository;
@@ -131,6 +137,18 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
         appointment.setUser(user);
         appointment.setDentist(dentist);
         Appointment appointmentSaved = appointmentRepository.save(appointment);
+
+        DentalRecord dentalRecord = DentalRecord.builder()
+                .appointment(appointmentSaved)
+                .notes("Rỗng")
+                .createdAt(VietNamTime.dateNow())
+                .updatedAt(VietNamTime.dateNow())
+                .diagnosis("Chưa có")
+                .examinationDate(VietNamTime.dateNow())
+                .treatment("Chưa có")
+                .build();
+        dentalRecordRepository.save(dentalRecord);
+
         BookingKafkaEvent bookingKafkaEvent = new BookingKafkaEvent(
                 appointmentSaved.getId(),
                 services,
@@ -164,7 +182,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
                     .status(HttpStatus.NOT_FOUND)
                     .build();
         }
-        if (!Objects.equals(rewardHistory.getReward().getId(), userId)) {
+        if (!Objects.equals(rewardHistory.getRewardPoint().getId(), userId)) {
             throw ServiceException.builder()
                     .message("Mã đổi thưởng không hợp lệ")
                     .clazz(UserAppointmentServiceImpl.class)
@@ -206,7 +224,7 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
     @Override
     public List<AppointmentDTO> getAllMyAppointment(Long userId) {
         return appointmentRepository
-                .findByUserId(userId)
+                .findByUserIdOrderByIdDesc(     userId)
                 .stream()
                 .map(AppointmentMapper::toAppointmentDTO)
                 .toList();

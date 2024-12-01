@@ -10,8 +10,6 @@ public record DentalRecordUpdate(
         @NotNull
         String treatment,
         @NotNull
-        String notes,
-        @NotNull
-        Long dentistId
+        String notes
 ) {
 }

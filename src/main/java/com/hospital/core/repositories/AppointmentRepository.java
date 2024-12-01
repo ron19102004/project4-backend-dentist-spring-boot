@@ -21,8 +21,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             "AND a.status = :status " +
             "AND a.dentist.id = :dentistId " +
             "GROUP BY a.appointmentDate")
-    List<QuantityAppointmentDentistDTO> countAppointmentDentistFollowAppointmentDate(@Param("datePre") Date datePre,
-                                                                                     @Param("dateNext") Date dateNext,
+    List<QuantityAppointmentDentistDTO> countAppointmentDentistFollowAppointmentDate(@Param("datePre") LocalDate datePre,
+                                                                                     @Param("dateNext") LocalDate dateNext,
                                                                                      @Param("status") AppointmentStatus status,
                                                                                      @Param("dentistId") Long dentistId);
     @Query("SELECT a FROM Appointment a " +
@@ -49,5 +49,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                                   @Param("dentistId") Long dentistId);
 
     Appointment findByIdAndUserId(Long appointmentId, Long userId);
-    List<Appointment> findByUserId(Long userId);
+    List<Appointment> findByUserIdOrderByIdDesc(Long userId);
 }

@@ -22,16 +22,24 @@ public class AppointmentMapper {
                     .clazz(AppointmentMapper.class)
                     .build();
         }
-        return AppointmentDTO.builder()
+        AppointmentDTO.AppointmentDTOBuilder builder = AppointmentDTO.builder();
+        builder
                 .appointment(appointment)
-                .invoice(appointment.getInvoice())
-                .dentalRecord(appointment.getDentalRecord())
-                .payment(appointment.getInvoice().getPayment())
-                .dentist(DentistMapper.toDentistResponse(appointment.getDentist()))
-                .invoiceServices(appointment.getInvoice().getInvoiceServices())
-                .user(appointment.getUser())
-                .accountant(appointment.getInvoice().getAccountant())
-                .build();
+                .user(appointment.getUser());
+        if (appointment.getInvoice() != null) {
+            builder
+                    .invoice(appointment.getInvoice())
+                    .payment(appointment.getInvoice().getPayment())
+                    .invoiceServices(appointment.getInvoice().getInvoiceServices())
+                    .accountant(appointment.getInvoice().getAccountant());
+        }
+        if (appointment.getDentist() != null) {
+            builder.dentist(DentistMapper.toDentistResponse(appointment.getDentist()));
+        }
+        if (appointment.getDentalRecord() != null) {
+            builder.dentalRecord(appointment.getDentalRecord());
+        }
+        return builder.build();
     }
 
     public AppointmentByDentistIdInDateResponse toAppointmentByDentistIdInDateResponse(List<Appointment> appointments) {
@@ -42,6 +50,7 @@ public class AppointmentMapper {
                         .toList())
                 .build();
     }
+
     public InvoiceDetailsResponse toInvoiceDetailsResponse(Invoice invoice) {
         return InvoiceDetailsResponse.builder()
                 .appointmentId(invoice.getId())

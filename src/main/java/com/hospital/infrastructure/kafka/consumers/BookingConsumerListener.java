@@ -3,6 +3,7 @@ package com.hospital.infrastructure.kafka.consumers;
 import com.hospital.core.dto.dental_record.DentalRecordUpdate;
 import com.hospital.core.entities.invoice.Invoice;
 import com.hospital.core.entities.invoice.InvoiceService;
+import com.hospital.core.entities.invoice.InvoiceStatus;
 import com.hospital.core.entities.payment.Payment;
 import com.hospital.core.entities.payment.PaymentType;
 import com.hospital.core.entities.work.Appointment;
@@ -28,19 +29,16 @@ public class BookingConsumerListener {
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
     private final InvoiceRepository invoiceRepository;
-    private final DentistAppointmentService dentistAppointmentService;
 
     @Autowired
     public BookingConsumerListener(InvoiceServiceRepository invoiceServiceRepository,
                                    PaymentRepository paymentRepository,
                                    AppointmentRepository appointmentRepository,
-                                   InvoiceRepository invoiceRepository,
-                                   DentistAppointmentService dentistAppointmentService) {
+                                   InvoiceRepository invoiceRepository) {
         this.invoiceServiceRepository = invoiceServiceRepository;
         this.paymentRepository = paymentRepository;
         this.appointmentRepository = appointmentRepository;
         this.invoiceRepository = invoiceRepository;
-        this.dentistAppointmentService = dentistAppointmentService;
     }
 
     @KafkaListener(
@@ -91,17 +89,9 @@ public class BookingConsumerListener {
                         .build());
             });
             invoiceServiceRepository.saveAll(invoiceServices);
-            dentistAppointmentService.updateDentalRecord(
-                    appointment.getDentist().getId(),
-                    appointment.getId(),
-                    DentalRecordUpdate.builder()
-                            .dentistId(appointment.getDentist().getId())
-                            .notes("Chưa có")
-                            .diagnosis("Chưa có")
-                            .treatment("Chưa có")
-                            .build());
             //send email
         } catch (Exception e) {
+            e.printStackTrace();
             throw ServiceException.builder()
                     .clazz(BookingConsumerListener.class)
                     .message(event.getAppointmentId().toString())

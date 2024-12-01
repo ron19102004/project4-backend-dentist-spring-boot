@@ -64,7 +64,7 @@ public class UserAppointmentController {
 
     @PostMapping("/invoice/add-reward/{appointmentId}/{rewardHistoryId}")
     @HasRole(justCheckAuthentication = true)
-    @WithRateLimitIPAddress(limit = 5)
+    @WithRateLimitIPAddress(limit = 20)
     @WithRateLimitRequest(duration = 3000)
     public ResponseEntity<ResponseLayout<Object>> addReward(
             @AuthenticationPrincipal User user,

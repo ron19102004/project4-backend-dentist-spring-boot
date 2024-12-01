@@ -13,5 +13,5 @@ public interface DentalRecordRepository extends JpaRepository<DentalRecord, Long
             "WHERE d.appointment.id = :appointmentId " +
             "AND d.appointment.status = :status ")
     DentalRecord findByAppointmentIdAndAptStatus(@Param("appointmentId") Long appointmentId,
-                                                 @Param("appointmentId") AppointmentStatus status);
+                                                 @Param("status") AppointmentStatus status);
 }

@@ -33,6 +33,8 @@ public class Dentist {
     @Column(columnDefinition = "LONGTEXT")
     private String description;
     private Date deletedAt;
+    @Column(columnDefinition = "LONGTEXT")
+    private String avatar;
     //Relationships
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
