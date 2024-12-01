@@ -1,6 +1,6 @@
-package com.hospital.redis.impls;
+package com.hospital.infrastructure.redis.impls;
 
-import com.hospital.redis.RedisLockService;
+import com.hospital.infrastructure.redis.RedisLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;

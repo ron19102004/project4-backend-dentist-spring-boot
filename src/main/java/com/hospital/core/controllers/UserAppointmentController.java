@@ -5,6 +5,7 @@ import com.hospital.core.annotations.WithRateLimitIPAddress;
 import com.hospital.core.annotations.WithRateLimitRequest;
 import com.hospital.core.dto.appointment.AppointmentDTO;
 import com.hospital.core.dto.appointment.BookingAppointmentRequest;
+import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.account.User;
 import com.hospital.core.entities.work.Appointment;
 import com.hospital.core.services.UserAppointmentService;
@@ -14,11 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users/appointments/v1")
 public class UserAppointmentController {
 
     private final UserAppointmentService userAppointmentService;
+
     @Autowired
     public UserAppointmentController(UserAppointmentService userAppointmentService) {
         this.userAppointmentService = userAppointmentService;
@@ -36,7 +40,16 @@ public class UserAppointmentController {
                 .data(userAppointmentService.booking(user.getId(), bookingAppointmentRequest))
                 .build());
     }
-
+    @WithRateLimitIPAddress
+    @GetMapping("/my-booking/all")
+    @HasRole(justCheckAuthentication = true)
+    public ResponseEntity<ResponseLayout<List<AppointmentDTO>>> getAllMyBooking(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(ResponseLayout.<List<AppointmentDTO>>builder()
+                .message("Lấy dữ liệu thành công")
+                .success(true)
+                .data(userAppointmentService.getAllMyAppointment(user.getId()))
+                .build());
+    }
     @PostMapping("/{appointmentId}/details")
     @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 10, duration = 30000)

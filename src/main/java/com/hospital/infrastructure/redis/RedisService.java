@@ -1,4 +1,4 @@
-package com.hospital.redis;
+package com.hospital.infrastructure.redis;
 
 import com.hospital.core.entities.reward.Reward;
 

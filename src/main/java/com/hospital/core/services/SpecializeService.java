@@ -10,4 +10,5 @@ public interface SpecializeService extends
         IReaderService<SpecializeResponse, Long>,
         IWriteService<Specialize, SpecializeCreateUpdateRequest, SpecializeCreateUpdateRequest, Long> {
     Specialize getByIdNormal(Long id);
+    SpecializeResponse getBySlug(String slug);
 }

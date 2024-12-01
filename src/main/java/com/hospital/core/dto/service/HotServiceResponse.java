@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 public class HotServiceResponse {
+    private Long serviceId;
     private String description;
     private String poster;
     private String name;

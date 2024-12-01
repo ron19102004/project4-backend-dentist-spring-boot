@@ -2,6 +2,7 @@ package com.hospital.core.mappers;
 
 import com.hospital.core.dto.appointment.AppointmentByDentistIdInDateResponse;
 import com.hospital.core.dto.appointment.AppointmentDTO;
+import com.hospital.core.dto.dentist.DentistResponse;
 import com.hospital.core.dto.invoice.InvoiceDetailsResponse;
 import com.hospital.core.entities.invoice.Invoice;
 import com.hospital.core.entities.work.Appointment;
@@ -26,7 +27,7 @@ public class AppointmentMapper {
                 .invoice(appointment.getInvoice())
                 .dentalRecord(appointment.getDentalRecord())
                 .payment(appointment.getInvoice().getPayment())
-                .dentist(appointment.getDentist())
+                .dentist(DentistMapper.toDentistResponse(appointment.getDentist()))
                 .invoiceServices(appointment.getInvoice().getInvoiceServices())
                 .user(appointment.getUser())
                 .accountant(appointment.getInvoice().getAccountant())

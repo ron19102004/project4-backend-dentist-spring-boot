@@ -1,5 +1,6 @@
 package com.hospital.core.dto.appointment;
 
+import com.hospital.core.dto.dentist.DentistResponse;
 import com.hospital.core.entities.account.Accountant;
 import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.User;
@@ -21,7 +22,7 @@ public class AppointmentDTO {
     private Invoice invoice;
     private DentalRecord dentalRecord;
     private Payment payment;
-    private Dentist dentist;
+    private DentistResponse dentist;
     private User user;
     private List<InvoiceService> invoiceServices;
     private Accountant accountant;

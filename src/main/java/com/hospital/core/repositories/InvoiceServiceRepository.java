@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface InvoiceServiceRepository extends JpaRepository<InvoiceService, Long> {
     @Query(value =
             "SELECT new com.hospital.core.dto.service." +
-            "HotServiceResponse(s.description,s.poster,s.name,s.slug,s.price,s.pointReward, COUNT(isv)) " +
+            "HotServiceResponse(s.id,s.description,s.poster,s.name,s.slug,s.price,s.pointReward, COUNT(isv)) " +
             "FROM InvoiceService isv " +
             "LEFT JOIN isv.service as s " +
             "GROUP BY s.id HAVING COUNT(isv) > 1 " +

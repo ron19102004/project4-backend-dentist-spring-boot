@@ -28,6 +28,11 @@ public class AccountantServiceImpl implements AccountantService {
         this.userService = userService;
     }
 
+    @Override
+    public Accountant findById(Long id) {
+        return accountantRepository.findById(id).orElse(null);
+    }
+
     @Transactional
     @Override
     public Accountant createAdvanceAccount(final AccountantDentistCreateRequest requestDto) {

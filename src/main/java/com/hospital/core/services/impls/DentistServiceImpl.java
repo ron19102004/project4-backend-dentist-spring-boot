@@ -1,10 +1,12 @@
 package com.hospital.core.services.impls;
 
 import com.hospital.core.dto.account.AccountantDentistCreateRequest;
+import com.hospital.core.dto.dentist.DentistResponse;
 import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.account.Specialize;
 import com.hospital.core.entities.account.User;
+import com.hospital.core.mappers.DentistMapper;
 import com.hospital.exception.ServiceException;
 import com.hospital.core.mappers.AccountMapper;
 import com.hospital.core.repositories.DentistRepository;
@@ -17,6 +19,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DentistServiceImpl implements DentistService {
@@ -63,5 +67,19 @@ public class DentistServiceImpl implements DentistService {
             return dentist;
         }
         return this.dentistRepository.save(AccountMapper.toDentist(requestDto, user, specialize));
+    }
+
+    @Override
+    public Dentist findById(Long id) {
+        return dentistRepository.findByIdWithRole(id, Role.DENTIST);
+    }
+
+    @Override
+    public List<DentistResponse> findAll() {
+        return dentistRepository
+                .findAllWithRoleRole(Role.DENTIST)
+                .stream()
+                .map(DentistMapper::toDentistResponse)
+                .toList();
     }
 }

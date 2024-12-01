@@ -74,7 +74,7 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
 
     @Transactional
     @Override
-    public RewardHistory usePoint(Long userId, Long rewardId, String message) {
+    public RewardHistory usePoint(Long userId, Long rewardId) {
         RewardPoint myRewardPoint = rewardPointRepository.findById(userId).orElse(null);
         if (myRewardPoint == null) {
             throw ServiceException.builder()
@@ -105,8 +105,16 @@ public class RewardHistoryServiceImpl implements RewardHistoryService {
         myRewardPoint.setLastUpdatedAt(VietNamTime.dateNow());
         entityManager.merge(myRewardPoint);
 
+        StringBuilder message = new StringBuilder();
+        message.append("Cảm ơn ")
+                .append(myRewardPoint.getUser().getFullName())
+                .append(" đã sử dụng dịch vụ của chúng tôi.")
+                .append("Quý khách đã quy đổi ")
+                .append(reward.getPoints())
+                .append(" điểm để lấy dịch vụ : ")
+                .append(reward.getContent());
         RewardHistory rewardHistory = RewardHistory.builder()
-                .content(message)
+                .content(message.toString())
                 .pointsUsed(-reward.getPoints())
                 .reward(reward)
                 .rewardPoint(myRewardPoint)

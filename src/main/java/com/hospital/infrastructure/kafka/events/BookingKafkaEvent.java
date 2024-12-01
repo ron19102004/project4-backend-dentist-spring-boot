@@ -1,4 +1,4 @@
-package com.hospital.kafka.events;
+package com.hospital.infrastructure.kafka.events;
 
 import com.hospital.core.dto.appointment.BookingAppointmentRequest;
 import com.hospital.core.entities.service.Service;

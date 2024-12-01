@@ -1,15 +1,13 @@
-package com.hospital.redis.impls;
+package com.hospital.infrastructure.redis.impls;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hospital.core.entities.reward.Reward;
-import com.hospital.redis.RedisService;
+import com.hospital.infrastructure.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service

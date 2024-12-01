@@ -6,15 +6,13 @@ import com.hospital.core.dto.specialize.SpecializeCreateUpdateRequest;
 import com.hospital.core.dto.specialize.SpecializeResponse;
 import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.account.Specialize;
-import com.hospital.core.entities.reward.Reward;
-import com.hospital.core.events.UpdateListRewardEvent;
 import com.hospital.core.events.UpdateListSpecializeEvent;
 import com.hospital.core.services.SpecializeService;
 import com.hospital.infrastructure.utils.ResponseLayout;
-import com.hospital.redis.RedisLockService;
-import com.hospital.redis.RedisLocking;
-import com.hospital.redis.RedisLockingHandler;
-import com.hospital.redis.RedisService;
+import com.hospital.infrastructure.redis.RedisLockService;
+import com.hospital.infrastructure.redis.RedisLocking;
+import com.hospital.infrastructure.redis.RedisLockingHandler;
+import com.hospital.infrastructure.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -84,6 +82,16 @@ public class SpecializeController {
     @WithRateLimitIPAddress(duration = 15000, limit = 5)
     public ResponseEntity<ResponseLayout<SpecializeResponse>> getSpecializeById(@PathVariable("id") Long id) {
         SpecializeResponse specialize = this.specializeService.getById(id);
+        return ResponseEntity.ok(ResponseLayout
+                .<SpecializeResponse>builder()
+                .message(specialize != null ? "Lấy thông tin thành công" : "Không tìm thấy chuyên nghành")
+                .success(specialize != null)
+                .data(specialize)
+                .build());
+    }
+    @GetMapping("/slug/{slug}")
+    public ResponseEntity<ResponseLayout<SpecializeResponse>> getSpecializeBySlug(@PathVariable("slug") String slug) {
+        SpecializeResponse specialize = this.specializeService.getBySlug(slug);
         return ResponseEntity.ok(ResponseLayout
                 .<SpecializeResponse>builder()
                 .message(specialize != null ? "Lấy thông tin thành công" : "Không tìm thấy chuyên nghành")

@@ -1,6 +1,6 @@
-package com.hospital.kafka.conf.producers;
+package com.hospital.infrastructure.kafka.conf.producers;
 
-import com.hospital.kafka.events.BookingKafkaEvent;
+import com.hospital.infrastructure.kafka.events.BookingKafkaEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

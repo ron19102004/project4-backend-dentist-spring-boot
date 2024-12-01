@@ -5,9 +5,6 @@ import com.hospital.core.dto.appointment.BookingAppointmentRequest;
 import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.User;
 import com.hospital.core.entities.invoice.Invoice;
-import com.hospital.core.entities.invoice.InvoiceService;
-import com.hospital.core.entities.payment.Payment;
-import com.hospital.core.entities.payment.PaymentType;
 import com.hospital.core.entities.reward.RewardHistory;
 import com.hospital.core.entities.work.Appointment;
 import com.hospital.core.entities.work.AppointmentStatus;
@@ -16,8 +13,8 @@ import com.hospital.exception.ServiceException;
 import com.hospital.core.mappers.AppointmentMapper;
 import com.hospital.core.mappers.UserAppointmentMapper;
 import com.hospital.core.services.UserAppointmentService;
-import com.hospital.kafka.events.BookingKafkaEvent;
-import com.hospital.kafka.producers.BookingKafkaEventProducer;
+import com.hospital.infrastructure.kafka.events.BookingKafkaEvent;
+import com.hospital.infrastructure.kafka.producers.BookingKafkaEventProducer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -25,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -205,5 +201,14 @@ public class UserAppointmentServiceImpl implements UserAppointmentService {
                     .build();
         }
         invoice.setRewardHistory(rewardHistory);
+    }
+
+    @Override
+    public List<AppointmentDTO> getAllMyAppointment(Long userId) {
+        return appointmentRepository
+                .findByUserId(userId)
+                .stream()
+                .map(AppointmentMapper::toAppointmentDTO)
+                .toList();
     }
 }

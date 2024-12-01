@@ -1,7 +1,7 @@
 package com.hospital.core.events.listeners;
 
 import com.hospital.core.events.UpdateListSpecializeEvent;
-import com.hospital.redis.RedisService;
+import com.hospital.infrastructure.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;

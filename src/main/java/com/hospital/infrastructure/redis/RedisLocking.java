@@ -1,4 +1,4 @@
-package com.hospital.redis;
+package com.hospital.infrastructure.redis;
 
 public class RedisLocking {
     private final RedisLockService redisLockService;

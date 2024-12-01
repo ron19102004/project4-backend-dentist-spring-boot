@@ -39,6 +39,11 @@ public class SpecializeServiceImpl implements SpecializeService {
     }
 
     @Override
+    public SpecializeResponse getBySlug(String slug) {
+        return SpecializeMapper.toSpecializeResponse(specializeRepository.findBySlugAndDeletedAtIsNull(slug));
+    }
+
+    @Override
     public SpecializeResponse getById(final Long id) {
         return SpecializeMapper.toSpecializeResponse(this.getByIdNormal(id));
     }

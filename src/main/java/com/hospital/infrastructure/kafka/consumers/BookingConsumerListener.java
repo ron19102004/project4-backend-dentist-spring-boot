@@ -1,6 +1,6 @@
-package com.hospital.kafka.consumers;
+package com.hospital.infrastructure.kafka.consumers;
 
-import com.hospital.core.entities.account.User;
+import com.hospital.core.dto.dental_record.DentalRecordUpdate;
 import com.hospital.core.entities.invoice.Invoice;
 import com.hospital.core.entities.invoice.InvoiceService;
 import com.hospital.core.entities.payment.Payment;
@@ -8,11 +8,11 @@ import com.hospital.core.entities.payment.PaymentType;
 import com.hospital.core.entities.work.Appointment;
 import com.hospital.core.mappers.UserAppointmentMapper;
 import com.hospital.core.repositories.*;
+import com.hospital.core.services.DentistAppointmentService;
 import com.hospital.exception.ServiceException;
-import com.hospital.kafka.events.BookingKafkaEvent;
+import com.hospital.infrastructure.kafka.events.BookingKafkaEvent;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.retry.annotation.Backoff;
@@ -28,15 +28,19 @@ public class BookingConsumerListener {
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
     private final InvoiceRepository invoiceRepository;
+    private final DentistAppointmentService dentistAppointmentService;
+
     @Autowired
     public BookingConsumerListener(InvoiceServiceRepository invoiceServiceRepository,
                                    PaymentRepository paymentRepository,
                                    AppointmentRepository appointmentRepository,
-                                   InvoiceRepository invoiceRepository) {
+                                   InvoiceRepository invoiceRepository,
+                                   DentistAppointmentService dentistAppointmentService) {
         this.invoiceServiceRepository = invoiceServiceRepository;
         this.paymentRepository = paymentRepository;
         this.appointmentRepository = appointmentRepository;
         this.invoiceRepository = invoiceRepository;
+        this.dentistAppointmentService = dentistAppointmentService;
     }
 
     @KafkaListener(
@@ -87,8 +91,17 @@ public class BookingConsumerListener {
                         .build());
             });
             invoiceServiceRepository.saveAll(invoiceServices);
+            dentistAppointmentService.updateDentalRecord(
+                    appointment.getDentist().getId(),
+                    appointment.getId(),
+                    DentalRecordUpdate.builder()
+                            .dentistId(appointment.getDentist().getId())
+                            .notes("Chưa có")
+                            .diagnosis("Chưa có")
+                            .treatment("Chưa có")
+                            .build());
             //send email
-        } catch (Exception e){
+        } catch (Exception e) {
             throw ServiceException.builder()
                     .clazz(BookingConsumerListener.class)
                     .message(event.getAppointmentId().toString())

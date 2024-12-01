@@ -49,5 +49,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                                   @Param("dentistId") Long dentistId);
 
     Appointment findByIdAndUserId(Long appointmentId, Long userId);
-
+    List<Appointment> findByUserId(Long userId);
 }

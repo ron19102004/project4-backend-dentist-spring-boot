@@ -7,8 +7,13 @@ import com.hospital.core.dto.account.CheckUserExistResponse;
 import com.hospital.core.dto.account.UserChangeRoleRequest;
 import com.hospital.core.dto.account.UserDetailsForAdminResponse;
 import com.hospital.core.dto.reward_history.MyRewardHistoriesResponse;
+import com.hospital.core.dto.user.UserDetailDTO;
+import com.hospital.core.entities.account.Accountant;
+import com.hospital.core.entities.account.Dentist;
 import com.hospital.core.entities.account.Role;
 import com.hospital.core.entities.account.User;
+import com.hospital.core.entities.reward.RewardHistory;
+import com.hospital.core.mappers.UserMapper;
 import com.hospital.core.services.AccountantService;
 import com.hospital.core.services.DentistService;
 import com.hospital.core.services.RewardHistoryService;
@@ -44,6 +49,18 @@ public class UserController {
         this.rewardHistoryService = rewardHistoryService;
     }
 
+    @PostMapping("/my-reward/use-point/{rewardId}")
+    @HasRole(justCheckAuthentication = true)
+    @WithRateLimitIPAddress(limit = 20, duration = 30000)
+    public ResponseEntity<ResponseLayout<RewardHistory>> addRewardHistory(@AuthenticationPrincipal User user,
+                                                                          @PathVariable("rewardId") Long rewardId) {
+        return ResponseEntity.ok(ResponseLayout.<RewardHistory>builder()
+                .data(rewardHistoryService.usePoint(user.getId(), rewardId))
+                .message("Đã quy đổi thành công")
+                .success(true)
+                .build());
+    }
+
     @GetMapping("/my-reward-history")
     @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 20, duration = 30000)
@@ -58,8 +75,19 @@ public class UserController {
     @GetMapping("/me")
     @HasRole(justCheckAuthentication = true)
     @WithRateLimitIPAddress(limit = 20, duration = 30000)
-    public ResponseEntity<User> getUserDetails(@AuthenticationPrincipal User user) {
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDetailDTO> getUserDetails(@AuthenticationPrincipal User user) {
+        UserDetailDTO userDetailDTO = UserMapper.userToUserDetailDTO(user, null, null);
+        switch (user.getRole()) {
+            case DENTIST -> {
+                Dentist dentist = dentistService.findById(user.getId());
+                userDetailDTO = UserMapper.userToUserDetailDTO(user, dentist, null);
+            }
+            case ACCOUNTANT -> {
+                Accountant accountant = accountantService.findById(user.getId());
+                userDetailDTO = UserMapper.userToUserDetailDTO(user, null, accountant);
+            }
+        }
+        return ResponseEntity.ok(userDetailDTO);
     }
 
     @HasRole(roles = {Role.ADMIN})
